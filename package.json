@@ -1,0 +1,52 @@
+{
+    "name": "pict-section-tuigrid",
+    "version": "1.0.0",
+    "description": "Pict Toast UI Grid Section",
+    "main": "source/Pict-Section-TuiGrid.js",
+    "scripts": {
+        "test": "./node_modules/.bin/mocha -u tdd -R spec",
+        "start": "node source/Pict-Section-TuiGrid.js",
+        "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+        "build": "./node_modules/.bin/gulp build",
+        "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
+        "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-section-tuigrid-image:local",
+        "docker-dev-run": "docker run -it -d --name pict-section-tuigrid-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-section-tuigrid\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-section-tuigrid-image:local",
+        "docker-dev-shell": "docker exec -it pict-section-tuigrid-dev /bin/bash"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/stevenvelozo/pict-section-tuigrid.git"
+    },
+    "author": "steven velozo <steven@velozo.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/stevenvelozo/pict-section-tuigrid/issues"
+    },
+    "homepage": "https://github.com/stevenvelozo/pict-section-tuigrid#readme",
+    "devDependencies": {
+        "browser-env": "^3.3.0",
+        "quackage": "^1.0.7"
+    },
+    "mocha": {
+        "diff": true,
+        "extension": [
+            "js"
+        ],
+        "package": "./package.json",
+        "reporter": "spec",
+        "slow": "75",
+        "timeout": "5000",
+        "ui": "tdd",
+        "watch-files": [
+            "source/**/*.js",
+            "test/**/*.js"
+        ],
+        "watch-ignore": [
+            "lib/vendor"
+        ]
+    },
+    "dependencies": {
+        "pict": "^1.0.76",
+        "tui-grid": "^4.21.11"
+    }
+}
