@@ -1,6 +1,6 @@
 {
     "name": "pict-section-tuigrid",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Pict Toast UI Grid Section",
     "main": "source/Pict-Section-TuiGrid.js",
     "scripts": {
