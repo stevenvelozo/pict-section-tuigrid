@@ -6,6 +6,9 @@ class PictSectionTuiGrid extends libPictViewClass
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
+
+		this.options = this.fable.Utility.extend(JSON.parse(JSON.stringify(require('./Pict-Section-TuiGrid-DefaultConfiguration.json'))), this.options);
+
 		this.tuiGrid = false;
 		if (this.AppData.Interactive)
 		{
