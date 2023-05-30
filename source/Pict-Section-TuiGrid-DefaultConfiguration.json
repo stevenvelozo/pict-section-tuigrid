@@ -1,0 +1,99 @@
+{
+	"RenderOnLoad": true,
+	"DefaultRenderable": "TuiGrid-Wrap",
+	"DefaultDestinationAddress": "#TuiGrid-Container-Div",
+	"Templates": [
+		{
+			"Hash": "TuiGrid-Container",
+			"Template": "<!-- TuiGrid-Container Rendering Soon -->"
+		}
+	],
+	"Renderables": [
+		{
+			"RenderableHash": "TuiGrid-Wrap",
+			"TemplateHash": "TuiGrid-Container",
+			"DestinationAddress": "#TuiGrid-Container-Div"
+		}
+	],
+	"TargetElementAddress": "#TuiGrid-Container-Div",
+	"GridDataAddress": false,
+	"GridData": [
+		{
+			"idrecord": 1,
+			"entity": "SampleEntity",
+			"name": "Record name 1",
+			"description": "description 1"
+		},
+		{
+			"idrecord": 2,
+			"entity": "SampleEntity",
+			"name": "Record name 2",
+			"description": "description 2"
+		},
+		{
+			"idrecord": 3,
+			"entity": "SampleEntity",
+			"name": "Record name 3",
+			"description": "description 3"
+		},
+		{
+			"idrecord": 4,
+			"entity": "SampleEntity",
+			"name": "Record name 4",
+			"description": "description 4"
+		},
+		{
+			"idrecord": 5,
+			"entity": "SampleEntity",
+			"name": "Record name 5",
+			"description": "description 5"
+		},
+		{
+			"idrecord": 6,
+			"entity": "SampleEntity",
+			"name": "Record name 6",
+			"description": "description 6"
+		},
+		{
+			"idrecord": 7,
+			"entity": "SampleEntity",
+			"name": "Record name 7",
+			"description": "description 7"
+		},
+		{
+			"idrecord": 8,
+			"entity": "SampleEntity",
+			"name": "Record name 8",
+			"description": "description 8"
+		},
+		{
+			"idrecord": 9,
+			"entity": "SampleEntity",
+			"name": "Record name 9",
+			"description": "description 9"
+		}
+	],
+	"ColumnsToSolveOnChange": {},
+	"TuiColumnSchema": [
+		{
+			"header": "IDRecord",
+			"name": "idrecord",
+			"PictTriggerSolveOnChange": true
+		},
+		{
+			"header": "Entity",
+			"name": "entity",
+			"PictTriggerSolveOnChange": true
+		},
+		{
+			"header": "Name",
+			"name": "name",
+			"editor": "text"
+		},
+		{
+			"header": "Description",
+			"name": "description",
+			"editor": "text"
+		}
+	]
+}
