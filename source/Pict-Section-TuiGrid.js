@@ -54,7 +54,7 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		if (this.options.GridDataAddress)
 		{
-			let tmpAddressedData = this.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
+			let tmpAddressedData = this.fable.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
 			if (typeof(tmpAddressedData) != 'object')
 			{
 				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof(tmpAddressedData)}.`);
