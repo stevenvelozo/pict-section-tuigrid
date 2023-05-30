@@ -92,33 +92,6 @@ class PictSectionTuiGrid extends libPictViewClass
 		this.tuiGrid.on('afterChange', ( pChangeData ) => { this.changeHandler(pChangeData); });
 	}
 
-	FormatterTwoDigitNumber(pCell)
-	{
-		let tmpValue = Number.parseFloat(pCell.value).toFixed(2);
-		if (isNaN(tmpValue))
-		{
-			return '';
-		}
-		else
-		{
-			return tmpValue;
-		}
-	}
-
-	FormatterCurrencyNumber(pCell)
-	{
-		let tmpCellValue = tuiFormatterTwoDigitNumber(pCell);
-
-		if (tmpCellValue == '')
-		{
-			return tmpCellValue;
-		}
-		else
-		{
-			return `$${tmpCellValue}`;
-		}
-	}
-
 	SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn)
 	{
 		if (typeof (pLookupValue) == 'undefined')
@@ -154,8 +127,15 @@ class PictSectionTuiGrid extends libPictViewClass
 
 module.exports = PictSectionTuiGrid;
 
-module.exports.CustomEditorNumber = require('./Pict-Section-TuiGrid-CustomNumberEditor.js');
+// Custom column header classes
 module.exports.CustomColumnHeaderNone = require('./Pict-Section-TuiGrid-CustomHeaderNone.js');
+
+// Custom editor classes
+module.exports.CustomEditorNumber = require('./Pict-Section-TuiGrid-CustomNumberEditor.js');
+
+// Custom formatting functions
+module.exports.FormatterTwoDigitNumber = require('./Pict-TuiGrid-Formatters.js').FormatterTwoDigitNumber;
+module.exports.FormatterCurrencyNumber = require('./Pict-TuiGrid-Formatters.js').FormatterCurrencyNumber;
 
 module.exports.default_configuration = (
 	{
