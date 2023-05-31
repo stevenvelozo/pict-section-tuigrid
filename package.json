@@ -47,6 +47,6 @@
         ]
     },
     "dependencies": {
-        "pict-view": "^1.0.3"
+        "pict-view": "^1.0.4"
     }
 }

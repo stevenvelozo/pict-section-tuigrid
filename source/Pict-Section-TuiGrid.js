@@ -25,10 +25,10 @@ class PictSectionTuiGrid extends libPictViewClass
 			this.log.trace(`PICT-TuiGrid No TuiGrid Prototype defined or explicitly set; looking for it in the window object.`);
 			if (typeof (window) != 'undefined')
 			{
-				if (typeof (window.tuiGrid) != 'undefined')
+				if ((typeof (window.tui) != 'undefined') && (typeof (window.tui.Grid) != 'undefined'))
 				{
 					this.log.trace(`PICT-TuiGrid Found TuiGrid Prototype in window.tuiGrid.`);
-					this.connectTuiGridPrototype(window.tuiGrid);
+					this.connectTuiGridPrototype(window.tui.Grid);
 				}
 				else
 				{
