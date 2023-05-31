@@ -385,7 +385,7 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
 
         // Overload the connectTuiGrid() function to use the inline version of the TuiGrid
         connectTuiGridPrototype(pTuiGridPrototype) {
-          if (typeof pTuiGridPrototype != undefined) {
+          if (typeof pTuiGridPrototype != 'undefined') {
             this._tuiGridPrototype = pTuiGridPrototype;
           } else {
             this.log.trace("PICT-TuiGrid No TuiGrid Prototype defined or explicitly set; looking for it in the window object.");

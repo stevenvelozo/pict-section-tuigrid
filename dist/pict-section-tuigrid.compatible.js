@@ -440,7 +440,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         _createClass(PictSectionTuiGrid, [{
           key: "connectTuiGridPrototype",
           value: function connectTuiGridPrototype(pTuiGridPrototype) {
-            if (_typeof(pTuiGridPrototype) != undefined) {
+            if (typeof pTuiGridPrototype != 'undefined') {
               this._tuiGridPrototype = pTuiGridPrototype;
             } else {
               this.log.trace("PICT-TuiGrid No TuiGrid Prototype defined or explicitly set; looking for it in the window object.");

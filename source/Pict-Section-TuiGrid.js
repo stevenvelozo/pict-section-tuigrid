@@ -16,7 +16,7 @@ class PictSectionTuiGrid extends libPictViewClass
 	// Overload the connectTuiGrid() function to use the inline version of the TuiGrid
 	connectTuiGridPrototype(pTuiGridPrototype)
 	{
-		if (typeof (pTuiGridPrototype) != undefined)
+		if (typeof (pTuiGridPrototype) != 'undefined')
 		{
 			this._tuiGridPrototype = pTuiGridPrototype;
 		}
