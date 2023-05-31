@@ -65,7 +65,7 @@ suite
 				() =>
 				{
 					test(
-							'Generated test 9',
+							'Basic Initialization',
 							(fDone) =>
 							{
 								let _Pict = configureTestPict();

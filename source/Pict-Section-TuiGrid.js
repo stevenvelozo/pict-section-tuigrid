@@ -1,5 +1,4 @@
 const libPictViewClass = require('pict').PictViewClass
-const libTuiGrid = require('tui-grid');
 
 class PictSectionTuiGrid extends libPictViewClass
 {
@@ -9,9 +8,39 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		super(pFable, tmpOptions, pServiceHash);
 
+		this._tuiGridPrototype = false;
+
 		this.tuiGrid = false;
-		if (this.AppData.Interactive)
+	}
+
+	// Overload the connectTuiGrid() function to use the inline version of the TuiGrid
+	connectTuiGridPrototype(pTuiGridPrototype)
+	{
+		if (typeof (pTuiGridPrototype) != undefined)
 		{
+			this._tuiGridPrototype = pTuiGridPrototype;
+		}
+		else
+		{
+			this.log.trace(`PICT-TuiGrid No TuiGrid Prototype defined or explicitly set; looking for it in the window object.`);
+			if (typeof (window) != 'undefined')
+			{
+				if (typeof (window.tuiGrid) != 'undefined')
+				{
+					this.log.trace(`PICT-TuiGrid Found TuiGrid Prototype in window.tuiGrid.`);
+					this.connectTuiGridPrototype(window.tuiGrid);
+				}
+				else
+				{
+					this.log.error(`PICT-TuiGrid No TuiGrid Prototype found in window.tuiGrid.`);
+					return false;
+				}
+			}
+			else
+			{
+				this.log.error(`PICT-TuiGrid No TuiGrid Prototype found in window.tuiGrid -- window object unavailable.`);
+				return false;
+			}
 		}
 	}
 
@@ -47,6 +76,11 @@ class PictSectionTuiGrid extends libPictViewClass
 
 	postInitialRenderInitialize()
 	{
+		// Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
+		if (!this._tuiGridPrototype)
+		{
+			this.connectTuiGridPrototype();
+		}
 		// This is where we wire up and initialize the tuigrid control
 		if (this.tuiGrid)
 		{
@@ -58,9 +92,9 @@ class PictSectionTuiGrid extends libPictViewClass
 		if (this.options.GridDataAddress)
 		{
 			let tmpAddressedData = this.fable.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
-			if (typeof(tmpAddressedData) != 'object')
+			if (typeof (tmpAddressedData) != 'object')
 			{
-				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof(tmpAddressedData)}.`);
+				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof (tmpAddressedData)}.`);
 			}
 			else
 			{
@@ -80,19 +114,27 @@ class PictSectionTuiGrid extends libPictViewClass
 			}
 		}
 
-		this.tuiGrid = new libTuiGrid(
-			{
-				el: tmpTargetElement,
-				usageStatistics: false,
-				scrollY: false,
-				columns: this.options.TuiColumnSchema,
-				data: this.options.GridData,
-				columnOptions:
+		if (!this._tuiGridPrototype)
+		{
+			this.log.warn(`TuiGrid Prototype not defined; cannot initialize TuiGrid at ${this.options.TargetElementAddress}.`)
+		}
+		else
+		{
+			let libTuiGrid = this._tuiGridPrototype;
+			this.tuiGrid = new libTuiGrid(
 				{
-					resizable: true
-				}
-			});
-		this.tuiGrid.on('afterChange', ( pChangeData ) => { this.changeHandler(pChangeData); });
+					el: tmpTargetElement,
+					usageStatistics: false,
+					scrollY: false,
+					columns: this.options.TuiColumnSchema,
+					data: this.options.GridData,
+					columnOptions:
+					{
+						resizable: true
+					}
+				});
+			this.tuiGrid.on('afterChange', (pChangeData) => { this.changeHandler(pChangeData); });
+		}
 	}
 
 	SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn)
@@ -103,16 +145,23 @@ class PictSectionTuiGrid extends libPictViewClass
 			return false;
 		}
 
-		let tmpData = this.tuiGrid.getData();
-
-		for (let i = 0; i < tmpData.length; i++)
+		if (this.tuiGrid)
 		{
-			let tmpRecord = tmpData[i];
+			let tmpData = this.tuiGrid.getData();
 
-			if (tmpRecord[pLookupColumn] == pLookupValue)
+			for (let i = 0; i < tmpData.length; i++)
 			{
-				this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
+				let tmpRecord = tmpData[i];
+
+				if (tmpRecord[pLookupColumn] == pLookupValue)
+				{
+					this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
+				}
 			}
+		}
+		else
+		{
+			this.log.warn(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by [${pLookupColumn}]::[${pLookupValue}].  No valid grid!`);
 		}
 	}
 
@@ -124,7 +173,15 @@ class PictSectionTuiGrid extends libPictViewClass
 			return false;
 		}
 
-		this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
+
+		if (this.tuiGrid)
+		{
+			this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
+		}
+		else
+		{
+			this.log.warn(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by [${pLookupColumn}]::[${pLookupValue}].  No valid grid!`);
+		}
 	}
 }
 
