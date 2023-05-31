@@ -1,4 +1,4 @@
-const libPictViewClass = require('pict').PictViewClass
+const libPictViewClass = require('pict-view');
 
 class PictSectionTuiGrid extends libPictViewClass
 {
