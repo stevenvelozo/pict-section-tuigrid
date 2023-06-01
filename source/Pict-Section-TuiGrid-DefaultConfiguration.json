@@ -1,13 +1,37 @@
 {
 	"RenderOnLoad": true,
+
+	"GridWidth": "auto",
+	"GridRowHeight": 40,
+	
+	"GridBodyHeight": "auto",
+	"GridBodyMinHeight": 130,
+
+	"GridColumnMinWidth": 50,
+	"GridColumnWidthResizable": true,
+	"GridColumnHeightResizable": false,
+
+	"GridColumnFrozenCount": 0,
+	"GridColumnFrozenBorderWidth": 3,
+
+	"GridScrollX": true,
+	"GridScrollY": true,
+
+	"GridShowDummyRows": false,
+	"GridDraggableRows": false,
+
+	"GridSelectionUnit": "cell",
+
 	"DefaultRenderable": "TuiGrid-Wrap",
 	"DefaultDestinationAddress": "#TuiGrid-Container-Div",
+
 	"Templates": [
 		{
 			"Hash": "TuiGrid-Container",
 			"Template": "<!-- TuiGrid-Container Rendering Soon -->"
 		}
 	],
+
 	"Renderables": [
 		{
 			"RenderableHash": "TuiGrid-Wrap",
@@ -15,8 +39,11 @@
 			"DestinationAddress": "#TuiGrid-Container-Div"
 		}
 	],
+
 	"TargetElementAddress": "#TuiGrid-Container-Div",
+
 	"GridDataAddress": false,
+
 	"GridData": [
 		{
 			"idrecord": 1,

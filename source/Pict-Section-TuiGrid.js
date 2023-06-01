@@ -10,9 +10,15 @@ class PictSectionTuiGrid extends libPictViewClass
 		super(pFable, tmpOptions, pServiceHash);
 
 		this.tuiGrid = false;
-		if (this.AppData.Interactive)
-		{
-		}
+
+
+		this.customHeaders = require('./Pict-TuiGrid-Headers.js');
+		this.customEditors = require('./Pict-TuiGrid-Editors.js');
+		this.customFormatters = require('./Pict-TuiGrid-Formatters.js');
+
+		this.columnSchema = false;
+		this.targetElementAddress = false;
+		this.gridData = false;
 	}
 
 	changeHandler(pChangeData)
@@ -47,7 +53,7 @@ class PictSectionTuiGrid extends libPictViewClass
 
 	postInitialRenderInitialize()
 	{
-		// This is where we wire up and initialize the tuigrid control
+		// This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
 		if (this.tuiGrid)
 		{
 			// The grid is already initialized.
@@ -61,35 +67,72 @@ class PictSectionTuiGrid extends libPictViewClass
 			if (typeof(tmpAddressedData) != 'object')
 			{
 				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof(tmpAddressedData)}.`);
+				this.gridData = [];
 			}
 			else
 			{
-				this.options.GridData = JSON.parse(JSON.stringify(tmpAddressedData));
+				this.gridData = JSON.parse(JSON.stringify(tmpAddressedData));
 			}
 		}
-
-		let tmpTargetElement = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
-
-		// Setup the solver
-		for (let i = 0; i < this.options.TuiColumnSchema.length; i++)
+		else
 		{
-			let tmpColumn = this.options.TuiColumnSchema[i];
+			this.gridData = [];
+		}
+
+		this.targetElement = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+
+		// TODO: Guard on element not matching?  What's best pattern when this isn't always interactive.
+		if (this.targetElement.length < 1)
+		{
+			this.log.error(`Could not find target element [${this.options.TargetElementAddress}] for TuiGrid!  Rendering won't function properly.`);
+			this.targetElement = false;
+			return false;
+		}
+		else
+		{
+			// If it matches more than one element, it's still going to write to the first.  What do you expect!
+			this.targetElement = this.targetElement[0];
+		}
+
+		// Check to see if there are any custom formatters.
+		this.columnSchema = this.options.TuiColumnSchema;
+		// Setup the solver and custom schema handlers.
+		for (let i = 0; i < this.columnSchema.length; i++)
+		{
+			let tmpColumn = this.columnSchema[i];
+			// If this bit is set on a column, the Form solver will trigger each time a change happens to that column.
 			if (tmpColumn.PictTriggerSolveOnChange)
 			{
 				this.options.ColumnsToSolveOnChange[tmpColumn.name] = tmpColumn;
+			}
+			// Look to see if there is an internal formatter that matches the type
+			if ((tmpColumn.hasOwnProperty('formatter')) && (this.customFormatters.hasOwnProperty(tmpColumn.formatter)))
+			{
+				// Assign our special formatter to the column.
+				tmpColumn.formatter = this.customFormatters[tmpColumn.formatter];
+			}
+			// Look to see if there is an internal editor that matches the type
+			if ((tmpColumn.hasOwnProperty('editor')) && (tmpColumn.editor.hasOwnProperty('type')) && (this.customEditors.hasOwnProperty(tmpColumn.editor.type)))
+			{
+				// Assign our special editor to the column.
+				tmpColumn.editor.type = this.customEditors[tmpColumn.editor.type];
 			}
 		}
 
 		this.tuiGrid = new libTuiGrid(
 			{
-				el: tmpTargetElement,
+				data: this.gridData,
+				el: this.targetElement,
+				columns: this.columnSchema,
+
+				// This is no bueno, yo
 				usageStatistics: false,
-				scrollY: false,
-				columns: this.options.TuiColumnSchema,
-				data: this.options.GridData,
+
+				scrollY: this.options.GridScrollY,
+
 				columnOptions:
 				{
-					resizable: true
+					resizable: this.options.GridColumnWidthResizable
 				}
 			});
 		this.tuiGrid.on('afterChange', ( pChangeData ) => { this.changeHandler(pChangeData); });
@@ -129,15 +172,5 @@ class PictSectionTuiGrid extends libPictViewClass
 }
 
 module.exports = PictSectionTuiGrid;
-
-// Custom column header classes
-module.exports.CustomColumnHeaderNone = require('./Pict-Section-TuiGrid-CustomHeaderNone.js');
-
-// Custom editor classes
-module.exports.CustomEditorNumber = require('./Pict-Section-TuiGrid-CustomNumberEditor.js');
-
-// Custom formatting functions
-module.exports.FormatterTwoDigitNumber = require('./Pict-TuiGrid-Formatters.js').FormatterTwoDigitNumber;
-module.exports.FormatterCurrencyNumber = require('./Pict-TuiGrid-Formatters.js').FormatterCurrencyNumber;
 
 module.exports.default_configuration = require('./Pict-Section-TuiGrid-DefaultConfiguration.json');
