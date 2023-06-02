@@ -466,16 +466,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             } else {
               this.gridData = [];
             }
-            this.targetElement = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
-
-            // TODO: Guard on element not matching?  What's best pattern when this isn't always interactive.
-            if (this.targetElement.length < 1) {
+            var tmpTargetElementSet = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+            if (tmpTargetElementSet.length < 1) {
               this.log.error("Could not find target element [".concat(this.options.TargetElementAddress, "] for TuiGrid!  Rendering won't function properly."));
               this.targetElement = false;
               return false;
             } else {
-              // If it matches more than one element, it's still going to write to the first.  What do you expect!
-              this.targetElement = this.targetElement[0];
+              // Just go for the first one.
+              this.targetElement = tmpTargetElementSet[0];
             }
 
             // Check to see if there are any custom formatters.

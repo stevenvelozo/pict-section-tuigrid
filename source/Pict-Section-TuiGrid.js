@@ -116,10 +116,8 @@ class PictSectionTuiGrid extends libPictViewClass
 			this.gridData = [];
 		}
 
-		this.targetElement = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
-
-		// TODO: Guard on element not matching?  What's best pattern when this isn't always interactive.
-		if (this.targetElement.length < 1)
+		let tmpTargetElementSet = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+		if (tmpTargetElementSet.length < 1)
 		{
 			this.log.error(`Could not find target element [${this.options.TargetElementAddress}] for TuiGrid!  Rendering won't function properly.`);
 			this.targetElement = false;
@@ -127,8 +125,8 @@ class PictSectionTuiGrid extends libPictViewClass
 		}
 		else
 		{
-			// If it matches more than one element, it's still going to write to the first.  What do you expect!
-			this.targetElement = this.targetElement[0];
+			// Just go for the first one.
+			this.targetElement = tmpTargetElementSet[0];
 		}
 
 		// Check to see if there are any custom formatters.
