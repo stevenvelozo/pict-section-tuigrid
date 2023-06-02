@@ -98,8 +98,8 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
 
           // Pull back a few things
           this.log = this.fable.log;
+          this.servicesMap = this.fable.serviceMap;
           this.services = this.fable.services;
-          this.defaultServices = this.fable.defaultServices;
         }
       }
       _defineProperty(FableServiceProviderBase, "isFableService", true);
@@ -396,7 +396,7 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
             }
           }
           if (tmpSolverNecessary) {
-            this.defaultServices.PictApplication.solve();
+            this.services.PictApplication.solve();
           }
         }
         postInitialRenderInitialize() {
@@ -422,7 +422,7 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
           } else {
             this.gridData = [];
           }
-          let tmpTargetElementSet = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+          let tmpTargetElementSet = this.services.ContentAssignment.getElement(this.options.TargetElementAddress);
           if (tmpTargetElementSet.length < 1) {
             this.log.error("Could not find target element [".concat(this.options.TargetElementAddress, "] for TuiGrid!  Rendering won't function properly."));
             this.targetElement = false;

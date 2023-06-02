@@ -113,8 +113,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
         // Pull back a few things
         this.log = this.fable.log;
+        this.servicesMap = this.fable.serviceMap;
         this.services = this.fable.services;
-        this.defaultServices = this.fable.defaultServices;
       });
       _defineProperty(FableServiceProviderBase, "isFableService", true);
       module.exports = FableServiceProviderBase;
@@ -437,7 +437,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               }
             }
             if (tmpSolverNecessary) {
-              this.defaultServices.PictApplication.solve();
+              this.services.PictApplication.solve();
             }
           }
         }, {
@@ -466,7 +466,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             } else {
               this.gridData = [];
             }
-            var tmpTargetElementSet = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+            var tmpTargetElementSet = this.services.ContentAssignment.getElement(this.options.TargetElementAddress);
             if (tmpTargetElementSet.length < 1) {
               this.log.error("Could not find target element [".concat(this.options.TargetElementAddress, "] for TuiGrid!  Rendering won't function properly."));
               this.targetElement = false;
