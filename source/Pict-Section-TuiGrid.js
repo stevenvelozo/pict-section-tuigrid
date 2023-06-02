@@ -103,7 +103,7 @@ class PictSectionTuiGrid extends libPictViewClass
 			let tmpAddressedData = this.fable.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
 			if (typeof (tmpAddressedData) != 'object')
 			{
-				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof(tmpAddressedData)}.`);
+				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof (tmpAddressedData)}.`);
 				this.gridData = [];
 			}
 			else
@@ -148,11 +148,36 @@ class PictSectionTuiGrid extends libPictViewClass
 				// Assign our special formatter to the column.
 				tmpColumn.formatter = this.customFormatters[tmpColumn.formatter];
 			}
-			// Look to see if there is an internal editor that matches the type
-			if ((tmpColumn.hasOwnProperty('editor')) && (tmpColumn.editor.hasOwnProperty('type')) && (this.customEditors.hasOwnProperty(tmpColumn.editor.type)))
+			// Look to see if there is an editor stanza
+			if (tmpColumn.hasOwnProperty('editor'))
 			{
-				// Assign our special editor to the column.
-				tmpColumn.editor.type = this.customEditors[tmpColumn.editor.type];
+				// Look to see if there is an internal editor that matches the type
+				if ((tmpColumn.editor.hasOwnProperty('type'))
+					&& (typeof (tmpColumn.editor.type) == 'string')
+					&& (this.customEditors.hasOwnProperty(tmpColumn.editor.type)))
+				{
+					// Assign our special editor to the column.
+					tmpColumn.editor.type = this.customEditors[tmpColumn.editor.type];
+				}
+
+				// Look to see if there is an internal editor that matches the type
+				if ((tmpColumn.editor.hasOwnProperty('options'))
+					&& (typeof (tmpColumn.editor.options) == 'object')
+					&& (tmpColumn.editor.options.hasOwnProperty('listItems'))
+					&& (typeof (tmpColumn.editor.options.listItems) == 'string'))
+				{
+					// Look for this address!  For the Record object, we will pass in the options.
+					let tmpListItems = this.fable.manifest.getValueByHash({ AppData: this.AppData, Options: this.options }, tmpColumn.editor.options.listItems);
+					if (typeof (tmpListItems) == 'object')
+					{
+						tmpColumn.editor.options.listItems = tmpListItems;
+					}
+					else
+					{
+						this.log.warn(`Pict TuiGrid for column [${tmpColumn.name}] had [${tmpColumn.editor.options.listItems}] as a listItems address, but it didn't return an object.  It was a [${typeof (tmpListItems)}].  Setting to empty list.`);
+						tmpColumn.editor.options.listItems = [];
+					}
+				}
 			}
 		}
 
@@ -173,7 +198,7 @@ class PictSectionTuiGrid extends libPictViewClass
 					resizable: this.options.GridColumnWidthResizable
 				}
 			});
-		this.tuiGrid.on('afterChange', ( pChangeData ) => { this.changeHandler(pChangeData); });
+		this.tuiGrid.on('afterChange', (pChangeData) => { this.changeHandler(pChangeData); });
 	}
 
 	SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn)

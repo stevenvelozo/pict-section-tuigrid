@@ -448,10 +448,28 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
               // Assign our special formatter to the column.
               tmpColumn.formatter = this.customFormatters[tmpColumn.formatter];
             }
-            // Look to see if there is an internal editor that matches the type
-            if (tmpColumn.hasOwnProperty('editor') && tmpColumn.editor.hasOwnProperty('type') && this.customEditors.hasOwnProperty(tmpColumn.editor.type)) {
-              // Assign our special editor to the column.
-              tmpColumn.editor.type = this.customEditors[tmpColumn.editor.type];
+            // Look to see if there is an editor stanza
+            if (tmpColumn.hasOwnProperty('editor')) {
+              // Look to see if there is an internal editor that matches the type
+              if (tmpColumn.editor.hasOwnProperty('type') && typeof tmpColumn.editor.type == 'string' && this.customEditors.hasOwnProperty(tmpColumn.editor.type)) {
+                // Assign our special editor to the column.
+                tmpColumn.editor.type = this.customEditors[tmpColumn.editor.type];
+              }
+
+              // Look to see if there is an internal editor that matches the type
+              if (tmpColumn.editor.hasOwnProperty('options') && typeof tmpColumn.editor.options == 'object' && tmpColumn.editor.options.hasOwnProperty('listItems') && typeof tmpColumn.editor.options.listItems == 'string') {
+                // Look for this address!  For the Record object, we will pass in the options.
+                let tmpListItems = this.fable.manifest.getValueByHash({
+                  AppData: this.AppData,
+                  Options: this.options
+                }, tmpColumn.editor.options.listItems);
+                if (typeof tmpListItems == 'object') {
+                  tmpColumn.editor.options.listItems = tmpListItems;
+                } else {
+                  this.log.warn("Pict TuiGrid for column [".concat(tmpColumn.name, "] had [").concat(tmpColumn.editor.options.listItems, "] as a listItems address, but it didn't return an object.  It was a [").concat(typeof tmpListItems, "].  Setting to empty list."));
+                  tmpColumn.editor.options.listItems = [];
+                }
+              }
             }
           }
           let libTuiGrid = this._tuiGridPrototype;
