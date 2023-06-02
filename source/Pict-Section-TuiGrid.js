@@ -116,7 +116,7 @@ class PictSectionTuiGrid extends libPictViewClass
 			this.gridData = [];
 		}
 
-		let tmpTargetElementSet = this.defaultServices.ContentAssignment.getElement(this.options.TargetElementAddress);
+		let tmpTargetElementSet = this.services.ContentAssignment.getElement(this.options.TargetElementAddress);
 		if (tmpTargetElementSet.length < 1)
 		{
 			this.log.error(`Could not find target element [${this.options.TargetElementAddress}] for TuiGrid!  Rendering won't function properly.`);
