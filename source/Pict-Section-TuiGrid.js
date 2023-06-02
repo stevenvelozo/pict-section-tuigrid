@@ -78,7 +78,7 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		if (tmpSolverNecessary)
 		{
-			this.defaultServices.PictApplication.solve();
+			this.services.PictApplication.solve();
 		}
 	}
 
