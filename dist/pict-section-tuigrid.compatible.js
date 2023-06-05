@@ -1,5 +1,7 @@
 "use strict";
 
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -379,23 +381,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         _inherits(PictSectionTuiGrid, _libPictViewClass);
         var _super2 = _createSuper(PictSectionTuiGrid);
         function PictSectionTuiGrid(pFable, pOptions, pServiceHash) {
-          var _this3;
           _classCallCheck(this, PictSectionTuiGrid);
           var tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
-          _this3 = _super2.call(this, pFable, tmpOptions, pServiceHash);
-          _this3._tuiGridPrototype = false;
-          _this3.tuiGrid = false;
-          _this3.customHeaders = require('./Pict-TuiGrid-Headers.js');
-          _this3.customEditors = require('./Pict-TuiGrid-Editors.js');
-          _this3.customFormatters = require('./Pict-TuiGrid-Formatters.js');
-          _this3.columnSchema = false;
-          _this3.targetElementAddress = false;
-          _this3.gridData = false;
-          return _this3;
+          return _super2.call(this, pFable, tmpOptions, pServiceHash);
         }
-
-        // Overload the connectTuiGrid() function to use the inline version of the TuiGrid
         _createClass(PictSectionTuiGrid, [{
+          key: "initializeGridControl",
+          value: function initializeGridControl() {
+            // This is to allow late binding of custom formatters, editors and header types
+            this.render(this.options.DefaultRenderable, this.options.DefaultDestinationAddress, this.options.DefaultTemplateRecordAddress);
+            this.onAfterInitialRender();
+          }
+        }, {
+          key: "onBeforeInitialize",
+          value: function onBeforeInitialize() {
+            _get(_getPrototypeOf(PictSectionTuiGrid.prototype), "onBeforeInitialize", this).call(this);
+            this._tuiGridPrototype = false;
+            this.tuiGrid = false;
+            this.customHeaders = require('./Pict-TuiGrid-Headers.js');
+            this.customEditors = require('./Pict-TuiGrid-Editors.js');
+            this.customFormatters = require('./Pict-TuiGrid-Formatters.js');
+            this.columnSchema = false;
+            this.targetElementAddress = false;
+            this.gridData = false;
+          }
+
+          // Overload the connectTuiGrid() function to use the inline version of the TuiGrid
+        }, {
           key: "connectTuiGridPrototype",
           value: function connectTuiGridPrototype(pTuiGridPrototype) {
             if (typeof pTuiGridPrototype != 'undefined') {
@@ -443,7 +455,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }, {
           key: "onAfterInitialRender",
           value: function onAfterInitialRender() {
-            var _this4 = this;
+            var _this3 = this;
             // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
             // Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
             if (!this._tuiGridPrototype) {
@@ -529,7 +541,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             var libTuiGrid = this._tuiGridPrototype;
             this.tuiGrid = new libTuiGrid(this.gridSettings);
             this.tuiGrid.on('afterChange', function (pChangeData) {
-              _this4.changeHandler(pChangeData);
+              _this3.changeHandler(pChangeData);
             });
           }
         }, {
