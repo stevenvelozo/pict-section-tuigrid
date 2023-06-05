@@ -441,8 +441,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
           }
         }, {
-          key: "postInitialRenderInitialize",
-          value: function postInitialRenderInitialize() {
+          key: "onAfterInitialRender",
+          value: function onAfterInitialRender() {
             var _this4 = this;
             // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
             // Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
