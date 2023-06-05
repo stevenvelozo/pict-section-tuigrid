@@ -514,8 +514,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                 }
               }
             }
-            var libTuiGrid = this._tuiGridPrototype;
-            this.tuiGrid = new libTuiGrid({
+            this.gridSettings = {
               data: this.gridData,
               el: this.targetElement,
               columns: this.columnSchema,
@@ -525,10 +524,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
               columnOptions: {
                 resizable: this.options.GridColumnWidthResizable
               }
-            });
+            };
+            this.customConfigureGridSettings();
+            var libTuiGrid = this._tuiGridPrototype;
+            this.tuiGrid = new libTuiGrid(this.gridSettings);
             this.tuiGrid.on('afterChange', function (pChangeData) {
               _this4.changeHandler(pChangeData);
             });
+          }
+        }, {
+          key: "customConfigureGridSettings",
+          value: function customConfigureGridSettings() {
+            // This can be overloaded to tweak up the this.gridSettings
           }
         }, {
           key: "SetGridValue",

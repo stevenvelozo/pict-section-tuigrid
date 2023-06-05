@@ -470,8 +470,7 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
               }
             }
           }
-          let libTuiGrid = this._tuiGridPrototype;
-          this.tuiGrid = new libTuiGrid({
+          this.gridSettings = {
             data: this.gridData,
             el: this.targetElement,
             columns: this.columnSchema,
@@ -481,10 +480,16 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
             columnOptions: {
               resizable: this.options.GridColumnWidthResizable
             }
-          });
+          };
+          this.customConfigureGridSettings();
+          let libTuiGrid = this._tuiGridPrototype;
+          this.tuiGrid = new libTuiGrid(this.gridSettings);
           this.tuiGrid.on('afterChange', pChangeData => {
             this.changeHandler(pChangeData);
           });
+        }
+        customConfigureGridSettings() {
+          // This can be overloaded to tweak up the this.gridSettings
         }
         SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn) {
           if (typeof pLookupValue == 'undefined') {
