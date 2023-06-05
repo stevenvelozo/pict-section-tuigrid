@@ -26,7 +26,7 @@
     "devDependencies": {
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
-        "pict": "^1.0.89",
+        "pict": "^1.0.90",
         "quackage": "^1.0.14"
     },
     "mocha": {
@@ -48,6 +48,6 @@
         ]
     },
     "dependencies": {
-        "pict-view": "^1.0.5"
+        "pict-view": "^1.0.6"
     }
 }
