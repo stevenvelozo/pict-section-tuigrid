@@ -347,11 +347,7 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
         constructor(pFable, pOptions, pServiceHash) {
           let tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
           super(pFable, tmpOptions, pServiceHash);
-        }
-        initializeGridControl() {
-          // This is to allow late binding of custom formatters, editors and header types
-          this.render(this.options.DefaultRenderable, this.options.DefaultDestinationAddress, this.options.DefaultTemplateRecordAddress);
-          this.onAfterInitialRender();
+          this.initialRenderComplete = false;
         }
         onBeforeInitialize() {
           super.onBeforeInitialize();
@@ -405,6 +401,12 @@ function _toPrimitive(input, hint) { if (typeof input !== "object" || input === 
           }
           if (tmpSolverNecessary) {
             this.services.PictApplication.solve();
+          }
+        }
+        onAfterRender() {
+          if (!this.initialRenderComplete) {
+            this.onAfterInitialRender();
+            this.initialRenderComplete = true;
           }
         }
         onAfterInitialRender() {

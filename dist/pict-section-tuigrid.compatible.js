@@ -381,18 +381,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         _inherits(PictSectionTuiGrid, _libPictViewClass);
         var _super2 = _createSuper(PictSectionTuiGrid);
         function PictSectionTuiGrid(pFable, pOptions, pServiceHash) {
+          var _this3;
           _classCallCheck(this, PictSectionTuiGrid);
           var tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
-          return _super2.call(this, pFable, tmpOptions, pServiceHash);
+          _this3 = _super2.call(this, pFable, tmpOptions, pServiceHash);
+          _this3.initialRenderComplete = false;
+          return _this3;
         }
         _createClass(PictSectionTuiGrid, [{
-          key: "initializeGridControl",
-          value: function initializeGridControl() {
-            // This is to allow late binding of custom formatters, editors and header types
-            this.render(this.options.DefaultRenderable, this.options.DefaultDestinationAddress, this.options.DefaultTemplateRecordAddress);
-            this.onAfterInitialRender();
-          }
-        }, {
           key: "onBeforeInitialize",
           value: function onBeforeInitialize() {
             _get(_getPrototypeOf(PictSectionTuiGrid.prototype), "onBeforeInitialize", this).call(this);
@@ -453,9 +449,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
           }
         }, {
+          key: "onAfterRender",
+          value: function onAfterRender() {
+            if (!this.initialRenderComplete) {
+              this.onAfterInitialRender();
+              this.initialRenderComplete = true;
+            }
+          }
+        }, {
           key: "onAfterInitialRender",
           value: function onAfterInitialRender() {
-            var _this3 = this;
+            var _this4 = this;
             // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
             // Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
             if (!this._tuiGridPrototype) {
@@ -541,7 +545,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             var libTuiGrid = this._tuiGridPrototype;
             this.tuiGrid = new libTuiGrid(this.gridSettings);
             this.tuiGrid.on('afterChange', function (pChangeData) {
-              _this3.changeHandler(pChangeData);
+              _this4.changeHandler(pChangeData);
             });
           }
         }, {
