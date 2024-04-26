@@ -894,6 +894,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
           }
+
+          /**
+           * @typedef {Object} TUIGridCellChange
+           * @property {any} rowKey - The key of the row that changed.
+           * @property {string} columnName - The name of the column that changed.
+           * @property {any} value - The "current" value of the cell. Slightly different meaning in preChangeHandler vs changeHandler (before / after the change is applied).
+           * @property {any} [nextValue] - The value that the cell will have after the change. Only populated in preChangeHandler (not changeHandler).
+           * @property {any} [prevValue] - The value that the cell had before the change. Only populated in changeHandler (not preChangeHandler).
+           */
+
+          /**
+           * @typedef {Object} TUIGridChangeEvent
+           * @property {Object} instance - The TuiGrid instance that fired the event.
+           * @property {TUIGridCellChange[]} changes - An array of objects representing the changes to grid cell values.
+           */
+
+          /**
+           * Interface method for handling changesets from the TuiGrid control. Invoked before the change has been applied to the affected cells.
+           *
+           * * The pre-change cell value is stored in value while the new cell value is stored in nextValue.
+           * * Any changes made to nextValue in this method will be reflected in the grid for that cell.
+           *
+           * @param {TUIGridChangeEvent} pChangeData - An event containing an array of objects representing the changes to grid cell values.
+           */
+        }, {
+          key: "preChangeHandler",
+          value: function preChangeHandler(pChangeData) {}
+
+          /**
+           * Interface method for handling changesets from the TuiGrid control. Invoked after the change has been applied to the affected cells.
+           *
+           * * Performs solver trigger for changes to any columns configured in "ColumnsToSolveOnChange" or with "PictTriggerSolveOnChange": true on a specific row.
+           * * The previous cell value is stored in prevValue while the next cell value is stored in value.
+           *
+           * @param {TUIGridChangeEvent} pChangeData - An event object containing an array of objects representing the changes to grid cell values.
+           */
         }, {
           key: "changeHandler",
           value: function changeHandler(pChangeData) {
@@ -1014,6 +1050,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             this.customConfigureGridSettings();
             var libTuiGrid = this._tuiGridPrototype;
             this.tuiGrid = new libTuiGrid(this.gridSettings);
+            this.tuiGrid.on('beforeChange', function (pChangeData) {
+              _this8.preChangeHandler(pChangeData);
+            });
             this.tuiGrid.on('afterChange', function (pChangeData) {
               _this8.changeHandler(pChangeData);
             });
