@@ -1,14 +1,14 @@
 {
     "name": "pict-section-tuigrid",
-    "version": "1.0.21",
+    "version": "1.0.22",
     "description": "Pict Toast UI Grid Section",
     "main": "source/Pict-Section-TuiGrid.js",
     "scripts": {
-        "test": "./node_modules/.bin/mocha -u tdd -R spec",
+        "test": "mocha -u tdd -R spec",
+        "tests": "mocha -u tdd -R spec -g",
         "start": "node source/Pict-Section-TuiGrid.js",
         "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
-        "build": "./node_modules/.bin/gulp build",
-        "build-compatible": "GULP_CUSTOM_BUILD_TARGET=compatible ./node_modules/.bin/gulp build",
+        "build": "quack build",
         "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-section-tuigrid-image:local",
         "docker-dev-run": "docker run -it -d --name pict-section-tuigrid-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-section-tuigrid\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-section-tuigrid-image:local",
         "docker-dev-shell": "docker exec -it pict-section-tuigrid-dev /bin/bash"
@@ -26,8 +26,8 @@
     "devDependencies": {
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
-        "pict": "^1.0.100",
-        "quackage": "^1.0.14"
+        "pict": "^1.0.163",
+        "quackage": "^1.0.28"
     },
     "mocha": {
         "diff": true,
@@ -48,6 +48,6 @@
         ]
     },
     "dependencies": {
-        "pict-view": "^1.0.19"
+        "pict-view": "^1.0.40"
     }
 }
