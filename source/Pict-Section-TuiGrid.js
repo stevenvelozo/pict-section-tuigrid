@@ -28,7 +28,14 @@ class PictSectionTuiGrid extends libPictViewClass
 		this.gridData = false;
 	}
 
-	// Overload the connectTuiGrid() function to use the inline version of the TuiGrid
+	/**
+	 * Construct a tuiGrid instance and connect it to the browser's dom object for the grid.  If the
+	 * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window 
+	 * object.
+	 * 
+	 * @param {object} pTuiGridPrototype - The TuiGrid prototype class expected to be loaded in the browser 
+	 * @returns 
+	 */
 	connectTuiGridPrototype(pTuiGridPrototype)
 	{
 		if (typeof (pTuiGridPrototype) != 'undefined')
@@ -105,13 +112,6 @@ class PictSectionTuiGrid extends libPictViewClass
 
 			this.log.trace(`Generic Change Handler for TuiGrid Fired, Entity ${tmpEntity} IDRecord ${tmpIDRecord} setting Column [${pChangeData.changes[i].value}] to new Value [${pChangeData.changes[i].value}]`);
 
-			//if (pChangeData.changes[i].columnName == 'some_important_column')
-			//{
-			//if (pChangeData.changes[i].value > some_important_threshold)
-			//{
-			// Do something
-			//}
-			//}
 			if (this.options.ColumnsToSolveOnChange.hasOwnProperty(pChangeData.changes[i].columnName))
 			{
 				tmpSolverNecessary = true;
@@ -254,11 +254,31 @@ class PictSectionTuiGrid extends libPictViewClass
 		this.tuiGrid.on('afterChange', (pChangeData) => { this.changeHandler(pChangeData); });
 	}
 
+	/**
+	 * This is expected to be overloaded with anything that needs to be added to the grid configuration
+	 * before the Toast UI Grid component is initialized in the browser.
+	 */
 	customConfigureGridSettings ()
 	{
 		// This can be overloaded to tweak up the this.gridSettings
 	}
 
+	/**
+	 * Lookup a specific record in the toast ui grid data set by value and pull the value from the map into the browser.
+	 * 
+	 * This function exists because if we mutate data in the map of plain javascript records tuigrid
+	 * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
+	 * is because they don't want to refresh until all the data has changed.
+	 * 
+	 * The best practice has been to have a hidden column behind the tuigrid that maps the correct entity
+	 * value set to the record in the map (e.g. IDRecord in one column and Entity in another).
+	 * 
+	 * @param {string} pCellColumnToBeSet - the Column hash to set
+	 * @param {string} pCellValueToSet - Value to be set 
+	 * @param {string} pLookupValue - the Value to look up in tuigrid
+	 * @param {string} pLookupColumn - the key of the column in the tuigrid record (which are plain javascript objects defined by the tuigrid config)
+	 * @returns 
+	 */
 	SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn)
 	{
 		if (typeof (pLookupValue) == 'undefined')
@@ -287,6 +307,19 @@ class PictSectionTuiGrid extends libPictViewClass
 		}
 	}
 
+	/**
+	 * Lookup a specific record in the toast ui grid data set by row key and pull in a column.
+	 * 
+	 * This function exists because if we mutate data in the map of plain javascript records tuigrid
+	 * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
+	 * is because they don't want to refresh until all the data has changed.
+	 * 
+	 * 
+	 * @param {string} pCellColumnToBeSet - the Column hash to set
+	 * @param {string} pCellValueToSet - Value to be set 
+	 * @param {string} pRowKey - the key of the row to be set
+	 * @returns 
+	 */
 	SetGridValueByRowKey(pCellColumnToBeSet, pCellValueToSet, pRowKey)
 	{
 		if (typeof (pRowKey) == 'undefined')
