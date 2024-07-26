@@ -8,7 +8,11 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		super(pFable, tmpOptions, pServiceHash);
 
+		this.dateFormatter = this.fable.instantiateServiceProviderWithoutRegistration('Dates');
+
 		this.initialRenderComplete = false;
+
+		this.customFormatters = {};
 	}
 
 	onBeforeInitialize()
@@ -21,11 +25,61 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		this.customHeaders = require('./Pict-TuiGrid-Headers.js');
 		this.customEditors = require('./Pict-TuiGrid-Editors.js');
-		this.customFormatters = require('./Pict-TuiGrid-Formatters.js');
+		this.initializeCustomFormatters();
 
 		this.columnSchema = false;
 		this.targetElementAddress = false;
 		this.gridData = false;
+	}
+
+	initializeCustomFormatters()
+	{
+		this.customFormatters.FormatterTwoDigitNumber = (pCell) =>
+			{
+				let tmpCellValue = Number.parseFloat(pCell.value);
+				let tmpPrecision = pCell?.decimalPrecision ?? 2;
+				if (isNaN(tmpCellValue))
+				{
+					return '';
+				}
+				else
+				{
+					return this.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+				}
+			};
+		this.customFormatters.FormatterCurrencyNumber = (pCell) =>
+			{
+				let tmpPrecision = pCell?.decimalPrecision ?? 2;
+				let tmpCellValue = this.fable.DataFormat.formatterDollars(pCell.value, tmpPrecision);
+				return tmpCellValue;
+			};
+
+		this.customFormatters.FormatterRoundedNumber = (pCell) =>
+			{
+				let tmpCellValue = Number.parseFloat(pCell.value);
+				let tmpPrecision = pCell?.decimalPrecision ?? 2;
+				if (isNaN(tmpCellValue))
+				{
+					return '';
+				}
+				else
+				{
+					return this.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+				}
+			};
+
+		this.customFormatters.FormatterDate = (pCell) =>
+			{
+				let tmpDate = tmpDates.dayJS.utc(pCell.value);
+				if (pCell.dateformat)
+				{
+					return tmpDate.format(pCell.dateformat);
+				}
+				else
+				{
+					return tmpDate.format();
+				}
+			};
 	}
 
 	/**
