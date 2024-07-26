@@ -1,6 +1,6 @@
 {
     "name": "pict-section-tuigrid",
-    "version": "1.0.25",
+    "version": "1.0.26",
     "description": "Pict Toast UI Grid Section",
     "main": "source/Pict-Section-TuiGrid.js",
     "scripts": {
@@ -26,8 +26,8 @@
     "devDependencies": {
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
-        "pict": "^1.0.191",
-        "quackage": "^1.0.29"
+        "pict": "^1.0.210",
+        "quackage": "^1.0.31"
     },
     "mocha": {
         "diff": true,
@@ -48,6 +48,6 @@
         ]
     },
     "dependencies": {
-        "pict-view": "^1.0.47"
+        "pict-view": "^1.0.51"
     }
 }

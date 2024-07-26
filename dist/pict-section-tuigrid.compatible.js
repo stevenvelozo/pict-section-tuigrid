@@ -153,32 +153,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         Renderables: [],
         Manifests: {}
       };
+
+      /** @typedef {(error?: Error) => void} ErrorCallback */
+      /** @typedef {number | boolean} PictTimestamp */
+
+      /**
+       * @typedef {Object} Renderable
+       *
+       * @property {string} RenderableHash - A unique hash for the renderable.
+       * @property {string} TemplateHash] - The hash of the template to use for rendering this renderable.
+       * @property {string} [DefaultTemplateRecordAddress] - The default address for resolving the data record for this renderable.
+       * @property {string} [ContentDestinationAddress] - The default address (DOM CSS selector) for rendering the content of this renderable.
+       * @property {string} [RenderMethod] - The method to use when rendering the renderable ('replace', 'append', 'prepend', 'append_once').
+       */
+
+      /**
+       * Represents a view in the Pict ecosystem.
+       */
       var PictView = /*#__PURE__*/function (_libFableServiceBase) {
+        /**
+         * @param {any} pFable - The Fable object that this service is attached to.
+         * @param {any} [pOptions] - (optional) The options for this service.
+         * @param {string} [pServiceHash] - (optional) The hash of the service.
+         */
         function PictView(pFable, pOptions, pServiceHash) {
           var _this;
           _classCallCheck(this, PictView);
           // Intersect default options, parent constructor, service information
           var tmpOptions = Object.assign({}, JSON.parse(JSON.stringify(defaultPictViewSettings)), pOptions);
           _this = _callSuper(this, PictView, [pFable, tmpOptions, pServiceHash]);
+          //FIXME: add types to fable and ancillaries
+          /** @type {any} */
+          _this.fable;
+          /** @type {any} */
+          _this.options;
+          /** @type {String} */
+          _this.UUID;
+          /** @type {String} */
+          _this.Hash;
+          /** @type {any} */
+          _this.log;
           if (!_this.options.ViewIdentifier) {
             _this.options.ViewIdentifier = "AutoViewID-".concat(_this.fable.getUUID());
           }
           _this.serviceType = 'PictView';
           // Convenience and consistency naming
+          /** @type {import('pict') & { log: any, instantiateServiceProviderWithoutRegistration: (hash: String) => any }} */
           _this.pict = _this.fable;
           // Wire in the essential Pict application state
           _this.AppData = _this.pict.AppData;
+
+          /** @type {PictTimestamp} */
           _this.initializeTimestamp = false;
+          /** @type {PictTimestamp} */
           _this.lastSolvedTimestamp = false;
+          /** @type {PictTimestamp} */
           _this.lastRenderedTimestamp = false;
+          /** @type {PictTimestamp} */
           _this.lastMarshalFromViewTimestamp = false;
+          /** @type {PictTimestamp} */
           _this.lastMarshalToViewTimestamp = false;
 
           // Load all templates from the array in the options
           // Templates are in the form of {Hash:'Some-Template-Hash',Template:'Template content',Source:'TemplateSource'}
           for (var i = 0; i < _this.options.Templates.length; i++) {
             var tmpTemplate = _this.options.Templates[i];
-            if (!tmpTemplate.hasOwnProperty('Hash') || !tmpTemplate.hasOwnProperty('Template')) {
+            if (!('Hash' in tmpTemplate) || !('Template' in tmpTemplate)) {
               _this.log.error("PictView [".concat(_this.UUID, "]::[").concat(_this.Hash, "] ").concat(_this.options.ViewIdentifier, " could not load Template ").concat(i, " in the options array."), tmpTemplate);
             } else {
               if (!tmpTemplate.Source) {
@@ -192,7 +232,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // Templates are in the form of {Prefix:'',Postfix:'-List-Row',Template:'Template content',Source:'TemplateSourceString'}
           for (var _i = 0; _i < _this.options.DefaultTemplates.length; _i++) {
             var tmpDefaultTemplate = _this.options.DefaultTemplates[_i];
-            if (!tmpDefaultTemplate.hasOwnProperty('Postfix') || !tmpDefaultTemplate.hasOwnProperty('Template')) {
+            if (!('Postfix' in tmpDefaultTemplate) || !('Template' in tmpDefaultTemplate)) {
               _this.log.error("PictView [".concat(_this.UUID, "]::[").concat(_this.Hash, "] ").concat(_this.options.ViewIdentifier, " could not load Default Template ").concat(_i, " in the options array."), tmpDefaultTemplate);
             } else {
               if (!tmpDefaultTemplate.Source) {
@@ -214,18 +254,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // They look as such: {Identifier:'ContentEntry', TemplateHash:'Content-Entry-Section-Main', ContentDestinationAddress:'#ContentSection', RecordAddress:'AppData.Content.DefaultText', ManifestTransformation:'ManyfestHash', ManifestDestinationAddress:'AppData.Content.DataToTransformContent'}
           // The only parts that are necessary are Identifier and Template
           // A developer can then do render('ContentEntry') and it just kinda works.  Or they can override the ContentDestinationAddress
+          /** @type {Object<String, Renderable>} */
           _this.renderables = {};
           for (var _i2 = 0; _i2 < _this.options.Renderables.length; _i2++) {
+            /** @type {Renderable} */
             var tmpRenderable = _this.options.Renderables[_i2];
-            _this.addRenderable(_this.options.Renderables[_i2]);
+            _this.addRenderable(tmpRenderable);
           }
           return _this;
         }
+
+        /**
+         * Adds a renderable to the view.
+         *
+         * @param {string | Renderable} pRenderableHash - The hash of the renderable, or a renderable object.
+         * @param {string} [pTemplateHash] - (optional) The hash of the template for the renderable.
+         * @param {string} [pDefaultTemplateRecordAddress] - (optional) The default data address for the template.
+         * @param {string} [pDefaultDestinationAddress] - (optional) The default destination address for the renderable.
+         * @param {string} [pRenderMethod] - (optional) The method to use when rendering the renderable (ex. 'replace').
+         */
         _inherits(PictView, _libFableServiceBase);
         return _createClass(PictView, [{
           key: "addRenderable",
-          value: function addRenderable(pRenderableHash, pTemplateHash, pDefaultTemplateDataAddress, pDefaultDestinationAddress, pRenderMethod) {
-            var tmpRenderable = false;
+          value: function addRenderable(pRenderableHash, pTemplateHash, pDefaultTemplateRecordAddress, pDefaultDestinationAddress, pRenderMethod) {
+            /** @type {Renderable} */
+            var tmpRenderable;
             if (_typeof(pRenderableHash) == 'object') {
               // The developer passed in the renderable as an object.
               // Use theirs instead!
@@ -235,8 +288,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               tmpRenderable = {
                 RenderableHash: pRenderableHash,
                 TemplateHash: pTemplateHash,
-                DefaultTemplateDataAddress: pDefaultTemplateDataAddress,
-                DefaultDestinationAddress: pDefaultDestinationAddress,
+                DefaultTemplateRecordAddress: pDefaultTemplateRecordAddress,
+                ContentDestinationAddress: pDefaultDestinationAddress,
                 RenderMethod: tmpRenderMethod
               };
             }
@@ -253,6 +306,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /* -------------------------------------------------------------------------- */
           /*                        Code Section: Initialization                        */
           /* -------------------------------------------------------------------------- */
+          /**
+           * Lifecycle hook that triggers before the view is initialized.
+           */
         }, {
           key: "onBeforeInitialize",
           value: function onBeforeInitialize() {
@@ -261,12 +317,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers before the view is initialized (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onBeforeInitializeAsync",
           value: function onBeforeInitializeAsync(fCallback) {
             this.onBeforeInitialize();
             return fCallback();
           }
+
+          /**
+           * Lifecycle hook that triggers when the view is initialized.
+           */
         }, {
           key: "onInitialize",
           value: function onInitialize() {
@@ -275,12 +341,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers when the view is initialized (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onInitializeAsync",
           value: function onInitializeAsync(fCallback) {
             this.onInitialize();
             return fCallback();
           }
+
+          /**
+           * Performs view initialization.
+           */
         }, {
           key: "initialize",
           value: function initialize() {
@@ -298,6 +374,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               return false;
             }
           }
+
+          /**
+           * Performs view initialization (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "initializeAsync",
           value: function initializeAsync(fCallback) {
@@ -334,6 +416,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is initialized (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onAfterInitializeAsync",
           value: function onAfterInitializeAsync(fCallback) {
@@ -344,23 +432,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /* -------------------------------------------------------------------------- */
           /*                            Code Section: Render                            */
           /* -------------------------------------------------------------------------- */
+          /**
+           * Lifecycle hook that triggers before the view is rendered.
+           *
+           * @param {any} [pRenderable] - The renderable that will be rendered.
+           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {any} [pRecord] - The record (data) that will be used to render the renderable.
+           */
         }, {
           key: "onBeforeRender",
-          value: function onBeforeRender(pRenderable, pRenderDestinationAddress, pData) {
+          value: function onBeforeRender(pRenderable, pRenderDestinationAddress, pRecord) {
             // Overload this to mess with stuff before the content gets generated from the template
             if (this.pict.LogNoisiness > 3) {
               this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " onBeforeRender:"));
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers before the view is rendered (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onBeforeRenderAsync",
           value: function onBeforeRenderAsync(fCallback) {
             return fCallback();
           }
+
+          /**
+           * Render a renderable from this view.
+           *
+           * @param {string} [pRenderable] - The hash of the renderable to render.
+           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string} [pTemplateRecordAddress] - The address where the data for the template is stored.
+           */
         }, {
           key: "render",
-          value: function render(pRenderable, pRenderDestinationAddress, pTemplateDataAddress) {
+          value: function render(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
             var tmpRenderableHash = typeof pRenderable === 'string' ? pRenderable : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
             if (!tmpRenderableHash) {
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it is not a valid renderable."));
@@ -376,24 +485,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not have a valid destination address."));
               return false;
             }
-            var tmpDataAddress;
-            var tmpData;
-            if (_typeof(pTemplateDataAddress) === 'object') {
-              tmpData = pTemplateDataAddress;
-              tmpDataAddress = 'Passed in as object';
+            var tmpRecordAddress;
+            var tmpRecord;
+            if (_typeof(pTemplateRecordAddress) === 'object') {
+              tmpRecord = pTemplateRecordAddress;
+              tmpRecordAddress = 'Passed in as object';
             } else {
-              tmpDataAddress = typeof pTemplateDataAddress === 'string' ? pTemplateDataAddress : typeof tmpRenderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
-              tmpData = typeof tmpDataAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpDataAddress) : undefined;
+              tmpRecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
+              tmpRecord = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
             }
 
             // Execute the developer-overridable pre-render behavior
-            this.onBeforeRender(tmpRenderable, tmpRenderDestinationAddress, tmpData);
+            this.onBeforeRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord);
             if (this.pict.LogControlFlow) {
-              this.log.trace("PICT-ControlFlow VIEW [".concat(this.UUID, "]::[").concat(this.Hash, "] Renderable[").concat(tmpRenderableHash, "] Destination[").concat(tmpRenderDestinationAddress, "] TemplateDataAddress[").concat(tmpDataAddress, "] render:"));
+              this.log.trace("PICT-ControlFlow VIEW [".concat(this.UUID, "]::[").concat(this.Hash, "] Renderable[").concat(tmpRenderableHash, "] Destination[").concat(tmpRenderDestinationAddress, "] TemplateRecordAddress[").concat(tmpRecordAddress, "] render:"));
             }
-
+            if (this.pict.LogNoisiness > 0) {
+              this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " Beginning Render of Renderable[").concat(tmpRenderableHash, "] to Destination [").concat(tmpRenderDestinationAddress, "]..."));
+            }
             // Generate the content output from the template and data
-            var tmpContent = this.pict.parseTemplateByHash(tmpRenderable.TemplateHash, tmpData);
+            var tmpContent = this.pict.parseTemplateByHash(tmpRenderable.TemplateHash, tmpRecord, null, [this]);
+            if (this.pict.LogNoisiness > 0) {
+              this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " Assigning Renderable[").concat(tmpRenderableHash, "] content length ").concat(tmpContent.length, " to Destination [").concat(tmpRenderDestinationAddress, "] using render method [").concat(tmpRenderable.RenderMethod, "]."));
+            }
 
             // Assign the content to the destination address
             switch (tmpRenderable.RenderMethod) {
@@ -418,58 +532,80 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
 
             // Execute the developer-overridable post-render behavior
-            this.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpData, tmpContent);
+            this.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord, tmpContent);
             this.lastRenderedTimestamp = this.pict.log.getTimeStamp();
             return true;
           }
+
+          /**
+           * Render a renderable from this view.
+           *
+           * @param {string | ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string | ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string | ErrorCallback} [pTemplateRecordAddress] - The address where the data for the template is stored.
+           * @param {ErrorCallback} [fCallback] - The callback to call when the async operation is complete.
+           */
         }, {
           key: "renderAsync",
-          value: function renderAsync(pRenderable, pRenderDestinationAddress, pTemplateDataAddress, fCallback) {
+          value: function renderAsync(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
             var _this3 = this;
-            var tmpRenderableHash = typeof pRenderable === 'string' ? pRenderable : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
+            var tmpRenderableHash = typeof pRenderableHash === 'string' ? pRenderableHash : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
+
+            // Allow the callback to be passed in as the last parameter no matter what
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : false;
+            if (!tmpCallback) {
+              this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " renderAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+              tmpCallback = function tmpCallback(pError) {
+                if (pError) {
+                  _this3.log.error("PictView [".concat(_this3.UUID, "]::[").concat(_this3.Hash, "] ").concat(_this3.options.Name, " renderAsync Auto Callback Error: ").concat(pError), pError);
+                }
+              };
+            }
             if (!tmpRenderableHash) {
-              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, "because it is not a valid renderable."));
-              return fCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, "because it is not a valid renderable.")));
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable."));
+              return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable.")));
             }
             var tmpRenderable = this.renderables[tmpRenderableHash];
             if (!tmpRenderable) {
-              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not exist."));
-              return fCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not exist.")));
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist."));
+              return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist.")));
             }
             var tmpRenderDestinationAddress = typeof pRenderDestinationAddress === 'string' ? pRenderDestinationAddress : typeof tmpRenderable.ContentDestinationAddress === 'string' ? tmpRenderable.ContentDestinationAddress : typeof this.options.DefaultDestinationAddress === 'string' ? this.options.DefaultDestinationAddress : false;
             if (!tmpRenderDestinationAddress) {
-              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not have a valid destination address."));
-              return fCallback(Error("Could not render ".concat(tmpRenderableHash)));
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not have a valid destination address."));
+              return tmpCallback(Error("Could not render ".concat(tmpRenderableHash)));
             }
-            var tmpDataAddress;
-            var tmpData;
-            if (_typeof(pTemplateDataAddress) === 'object') {
-              tmpData = pTemplateDataAddress;
-              tmpDataAddress = 'Passed in as object';
+            var tmpRecordAddress;
+            var tmpRecord;
+            if (_typeof(pTemplateRecordAddress) === 'object') {
+              tmpRecord = pTemplateRecordAddress;
+              tmpRecordAddress = 'Passed in as object';
             } else {
-              tmpDataAddress = typeof pTemplateDataAddress === 'string' ? pTemplateDataAddress : typeof tmpRenderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
-              tmpData = typeof tmpDataAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpDataAddress) : undefined;
+              tmpRecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
+              tmpRecord = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
             }
             if (this.pict.LogControlFlow) {
-              this.log.trace("PICT-ControlFlow VIEW [".concat(this.UUID, "]::[").concat(this.Hash, "] Renderable[").concat(tmpRenderableHash, "] Destination[").concat(tmpRenderDestinationAddress, "] TemplateDataAddress[").concat(tmpDataAddress, "] renderAsync:"));
+              this.log.trace("PICT-ControlFlow VIEW [".concat(this.UUID, "]::[").concat(this.Hash, "] Renderable[").concat(tmpRenderableHash, "] Destination[").concat(tmpRenderDestinationAddress, "] TemplateRecordAddress[").concat(tmpRecordAddress, "] renderAsync:"));
             }
             if (this.pict.LogNoisiness > 2) {
               this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " Beginning Asynchronous Render (callback-style)..."));
             }
-            if (this.pict.LogNoisiness > 4) {
-              this.log.trace("At-render AppData: ", this.AppData);
-            }
             var tmpAnticipate = this.fable.newAnticipate();
             tmpAnticipate.anticipate(function (fOnBeforeRenderCallback) {
-              _this3.onBeforeRender(tmpRenderable, tmpRenderDestinationAddress, tmpData);
+              _this3.onBeforeRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord);
               _this3.onBeforeRenderAsync(fOnBeforeRenderCallback);
             });
+            var tmpContent;
             tmpAnticipate.anticipate(function (fAsyncTemplateCallback) {
               // Render the template (asynchronously)
-              _this3.pict.parseTemplateByHash(tmpRenderable.TemplateHash, tmpData, function (pError, pContent) {
+              _this3.pict.parseTemplateByHash(tmpRenderable.TemplateHash, tmpRecord, function (pError, pContent) {
                 if (pError) {
-                  _this3.log.error("PictView [".concat(_this3.UUID, "]::[").concat(_this3.Hash, "] ").concat(_this3.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it did not parse the template."), pError);
+                  _this3.log.error("PictView [".concat(_this3.UUID, "]::[").concat(_this3.Hash, "] ").concat(_this3.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it did not parse the template."), pError);
                   return fAsyncTemplateCallback(pError);
+                }
+                tmpContent = pContent;
+                if (_this3.pict.LogNoisiness > 0) {
+                  _this3.log.trace("PictView [".concat(_this3.UUID, "]::[").concat(_this3.Hash, "] ").concat(_this3.options.ViewIdentifier, " Assigning Renderable[").concat(tmpRenderableHash, "] content length ").concat(pContent.length, " to Destination [").concat(tmpRenderDestinationAddress, "] using Async render method ").concat(tmpRenderable.RenderMethod, "."));
                 }
 
                 // Assign the content to the destination address
@@ -495,28 +631,49 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 // Execute the developer-overridable asynchronous post-render behavior
                 _this3.lastRenderedTimestamp = _this3.pict.log.getTimeStamp();
                 return fAsyncTemplateCallback();
-              });
+              }, [_this3]);
             });
             tmpAnticipate.anticipate(function (fOnAfterRenderCallback) {
-              _this3.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpData);
+              _this3.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord, tmpContent);
               _this3.onAfterRenderAsync(fOnAfterRenderCallback);
             });
-            tmpAnticipate.wait(fCallback);
+            tmpAnticipate.wait(tmpCallback);
           }
+
+          /**
+           * Renders the default renderable.
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "renderDefaultAsync",
           value: function renderDefaultAsync(fCallback) {
-            // Render the default renderable (falses do the proper forward lookups of values from config and such)
-            this.renderAsync(false, false, false, fCallback);
+            // Render the default renderable
+            this.renderAsync(fCallback);
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is rendered.
+           *
+           * @param {any} [pRenderable] - The renderable that was rendered.
+           * @param {string} [pRenderDestinationAddress] - The address where the renderable was rendered.
+           * @param {any} [pRecord] - The record (data) that was used by the renderable.
+           * @param {string} [pContent] - The content that was rendered.
+           */
         }, {
           key: "onAfterRender",
-          value: function onAfterRender(pRenderable, pRenderDestinationAddress, pData) {
+          value: function onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent) {
             if (this.pict.LogNoisiness > 3) {
               this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " onAfterRender:"));
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is rendered (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onAfterRenderAsync",
           value: function onAfterRenderAsync(fCallback) {
@@ -526,6 +683,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /* -------------------------------------------------------------------------- */
           /*                            Code Section: Solver                            */
           /* -------------------------------------------------------------------------- */
+          /**
+           * Lifecycle hook that triggers before the view is solved.
+           */
         }, {
           key: "onBeforeSolve",
           value: function onBeforeSolve() {
@@ -534,12 +694,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers before the view is solved (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onBeforeSolveAsync",
           value: function onBeforeSolveAsync(fCallback) {
             this.onBeforeSolve();
             return fCallback();
           }
+
+          /**
+           * Lifecycle hook that triggers when the view is solved.
+           */
         }, {
           key: "onSolve",
           value: function onSolve() {
@@ -548,12 +718,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers when the view is solved (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onSolveAsync",
           value: function onSolveAsync(fCallback) {
             this.onSolve();
             return fCallback();
           }
+
+          /**
+           * Performs view solving and triggers lifecycle hooks.
+           *
+           * @return {boolean} - True if the view was solved successfully, false otherwise.
+           */
         }, {
           key: "solve",
           value: function solve() {
@@ -566,11 +748,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             this.lastSolvedTimestamp = this.pict.log.getTimeStamp();
             return true;
           }
+
+          /**
+           * Performs view solving and triggers lifecycle hooks (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "solveAsync",
           value: function solveAsync(fCallback) {
             var _this4 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+            if (!tmpCallback) {
+              this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " solveAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+              tmpCallback = function tmpCallback(pError) {
+                if (pError) {
+                  _this4.log.error("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.Name, " solveAsync Auto Callback Error: ").concat(pError), pError);
+                }
+              };
+            }
             tmpAnticipate.anticipate(this.onBeforeSolveAsync.bind(this));
             tmpAnticipate.anticipate(this.onSolveAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterSolveAsync.bind(this));
@@ -579,9 +776,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 _this4.log.trace("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.ViewIdentifier, " solveAsync() complete."));
               }
               _this4.lastSolvedTimestamp = _this4.pict.log.getTimeStamp();
-              return fCallback(pError);
+              return tmpCallback(pError);
             });
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is solved.
+           */
         }, {
           key: "onAfterSolve",
           value: function onAfterSolve() {
@@ -590,6 +791,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is solved (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onAfterSolveAsync",
           value: function onAfterSolveAsync(fCallback) {
@@ -600,6 +807,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /* -------------------------------------------------------------------------- */
           /*                     Code Section: Marshal From View                        */
           /* -------------------------------------------------------------------------- */
+          /**
+           * Lifecycle hook that triggers before data is marshaled from the view.
+           *
+           * @return {boolean} - True if the operation was successful, false otherwise.
+           */
         }, {
           key: "onBeforeMarshalFromView",
           value: function onBeforeMarshalFromView() {
@@ -608,12 +820,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers before data is marshaled from the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onBeforeMarshalFromViewAsync",
           value: function onBeforeMarshalFromViewAsync(fCallback) {
             this.onBeforeMarshalFromView();
             return fCallback();
           }
+
+          /**
+           * Lifecycle hook that triggers when data is marshaled from the view.
+           */
         }, {
           key: "onMarshalFromView",
           value: function onMarshalFromView() {
@@ -622,12 +844,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers when data is marshaled from the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onMarshalFromViewAsync",
           value: function onMarshalFromViewAsync(fCallback) {
             this.onMarshalFromView();
             return fCallback();
           }
+
+          /**
+           * Marshals data from the view.
+           *
+           * @return {boolean} - True if the operation was successful, false otherwise.
+           */
         }, {
           key: "marshalFromView",
           value: function marshalFromView() {
@@ -640,22 +874,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             this.lastMarshalFromViewTimestamp = this.pict.log.getTimeStamp();
             return true;
           }
+
+          /**
+           * Marshals data from the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "marshalFromViewAsync",
           value: function marshalFromViewAsync(fCallback) {
             var _this5 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+            if (!tmpCallback) {
+              this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalFromViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+              tmpCallback = function tmpCallback(pError) {
+                if (pError) {
+                  _this5.log.error("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.Name, " marshalFromViewAsync Auto Callback Error: ").concat(pError), pError);
+                }
+              };
+            }
             tmpAnticipate.anticipate(this.onBeforeMarshalFromViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onMarshalFromViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterMarshalFromViewAsync.bind(this));
             tmpAnticipate.wait(function (pError) {
               if (_this5.pict.LogNoisiness > 2) {
-                _this5.log.trace("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.ViewIdentifier, " solveAsync() complete."));
+                _this5.log.trace("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.ViewIdentifier, " marshalFromViewAsync() complete."));
               }
               _this5.lastMarshalFromViewTimestamp = _this5.pict.log.getTimeStamp();
-              return fCallback(pError);
+              return tmpCallback(pError);
             });
           }
+
+          /**
+           * Lifecycle hook that triggers after data is marshaled from the view.
+           */
         }, {
           key: "onAfterMarshalFromView",
           value: function onAfterMarshalFromView() {
@@ -664,6 +917,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers after data is marshaled from the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onAfterMarshalFromViewAsync",
           value: function onAfterMarshalFromViewAsync(fCallback) {
@@ -674,6 +933,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /* -------------------------------------------------------------------------- */
           /*                     Code Section: Marshal To View                          */
           /* -------------------------------------------------------------------------- */
+          /**
+           * Lifecycle hook that triggers before data is marshaled into the view.
+           */
         }, {
           key: "onBeforeMarshalToView",
           value: function onBeforeMarshalToView() {
@@ -682,12 +944,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers before data is marshaled into the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onBeforeMarshalToViewAsync",
           value: function onBeforeMarshalToViewAsync(fCallback) {
             this.onBeforeMarshalToView();
             return fCallback();
           }
+
+          /**
+           * Lifecycle hook that triggers when data is marshaled into the view.
+           */
         }, {
           key: "onMarshalToView",
           value: function onMarshalToView() {
@@ -696,12 +968,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers when data is marshaled into the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onMarshalToViewAsync",
           value: function onMarshalToViewAsync(fCallback) {
             this.onMarshalToView();
             return fCallback();
           }
+
+          /**
+           * Marshals data into the view.
+           *
+           * @return {boolean} - True if the operation was successful, false otherwise.
+           */
         }, {
           key: "marshalToView",
           value: function marshalToView() {
@@ -714,22 +998,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             this.lastMarshalToViewTimestamp = this.pict.log.getTimeStamp();
             return true;
           }
+
+          /**
+           * Marshals data into the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "marshalToViewAsync",
           value: function marshalToViewAsync(fCallback) {
             var _this6 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+            if (!tmpCallback) {
+              this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalToViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+              tmpCallback = function tmpCallback(pError) {
+                if (pError) {
+                  _this6.log.error("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.Name, " marshalToViewAsync Auto Callback Error: ").concat(pError), pError);
+                }
+              };
+            }
             tmpAnticipate.anticipate(this.onBeforeMarshalToViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onMarshalToViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterMarshalToViewAsync.bind(this));
             tmpAnticipate.wait(function (pError) {
               if (_this6.pict.LogNoisiness > 2) {
-                _this6.log.trace("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.ViewIdentifier, " solveAsync() complete."));
+                _this6.log.trace("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.ViewIdentifier, " marshalToViewAsync() complete."));
               }
               _this6.lastMarshalToViewTimestamp = _this6.pict.log.getTimeStamp();
-              return fCallback(pError);
+              return tmpCallback(pError);
             });
           }
+
+          /**
+           * Lifecycle hook that triggers after data is marshaled into the view.
+           */
         }, {
           key: "onAfterMarshalToView",
           value: function onAfterMarshalToView() {
@@ -738,11 +1041,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return true;
           }
+
+          /**
+           * Lifecycle hook that triggers after data is marshaled into the view (async flow).
+           *
+           * @param {ErrorCallback} fCallback - The callback to call when the async operation is complete.
+           */
         }, {
           key: "onAfterMarshalToViewAsync",
           value: function onAfterMarshalToViewAsync(fCallback) {
             this.onAfterMarshalToView();
             return fCallback();
+          }
+
+          /** @return {boolean} - True if the object is a PictView. */
+        }, {
+          key: "isPictView",
+          get: function get() {
+            return true;
           }
         }]);
       }(libFableServiceBase);
@@ -854,7 +1170,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           _classCallCheck(this, PictSectionTuiGrid);
           var tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
           _this7 = _callSuper(this, PictSectionTuiGrid, [pFable, tmpOptions, pServiceHash]);
+          _this7.dateFormatter = _this7.fable.instantiateServiceProviderWithoutRegistration('Dates');
           _this7.initialRenderComplete = false;
+          _this7.customFormatters = {};
           return _this7;
         }
         _inherits(PictSectionTuiGrid, _libPictViewClass);
@@ -866,13 +1184,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             this.tuiGrid = false;
             this.customHeaders = require('./Pict-TuiGrid-Headers.js');
             this.customEditors = require('./Pict-TuiGrid-Editors.js');
-            this.customFormatters = require('./Pict-TuiGrid-Formatters.js');
+            this.initializeCustomFormatters();
             this.columnSchema = false;
             this.targetElementAddress = false;
             this.gridData = false;
           }
+        }, {
+          key: "initializeCustomFormatters",
+          value: function initializeCustomFormatters() {
+            var _this8 = this;
+            this.customFormatters.FormatterTwoDigitNumber = function (pCell) {
+              var _pCell$decimalPrecisi;
+              var tmpCellValue = Number.parseFloat(pCell.value);
+              var tmpPrecision = (_pCell$decimalPrecisi = pCell === null || pCell === void 0 ? void 0 : pCell.decimalPrecision) !== null && _pCell$decimalPrecisi !== void 0 ? _pCell$decimalPrecisi : 2;
+              if (isNaN(tmpCellValue)) {
+                return '';
+              } else {
+                return _this8.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+              }
+            };
+            this.customFormatters.FormatterCurrencyNumber = function (pCell) {
+              var _pCell$decimalPrecisi2;
+              var tmpPrecision = (_pCell$decimalPrecisi2 = pCell === null || pCell === void 0 ? void 0 : pCell.decimalPrecision) !== null && _pCell$decimalPrecisi2 !== void 0 ? _pCell$decimalPrecisi2 : 2;
+              var tmpCellValue = _this8.fable.DataFormat.formatterDollars(pCell.value, tmpPrecision);
+              return tmpCellValue;
+            };
+            this.customFormatters.FormatterRoundedNumber = function (pCell) {
+              var _pCell$decimalPrecisi3;
+              var tmpCellValue = Number.parseFloat(pCell.value);
+              var tmpPrecision = (_pCell$decimalPrecisi3 = pCell === null || pCell === void 0 ? void 0 : pCell.decimalPrecision) !== null && _pCell$decimalPrecisi3 !== void 0 ? _pCell$decimalPrecisi3 : 2;
+              if (isNaN(tmpCellValue)) {
+                return '';
+              } else {
+                return _this8.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+              }
+            };
+            this.customFormatters.FormatterDate = function (pCell) {
+              var tmpDate = tmpDates.dayJS.utc(pCell.value);
+              if (pCell.dateformat) {
+                return tmpDate.format(pCell.dateformat);
+              } else {
+                return tmpDate.format();
+              }
+            };
+          }
 
-          // Overload the connectTuiGrid() function to use the inline version of the TuiGrid
+          /**
+           * Construct a tuiGrid instance and connect it to the browser's dom object for the grid.  If the
+           * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window 
+           * object.
+           * 
+           * @param {object} pTuiGridPrototype - The TuiGrid prototype class expected to be loaded in the browser 
+           * @returns 
+           */
         }, {
           key: "connectTuiGridPrototype",
           value: function connectTuiGridPrototype(pTuiGridPrototype) {
@@ -938,14 +1302,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               var tmpEntity = pChangeData.instance.getValue(pChangeData.changes[i].rowKey, 'entity');
               var tmpIDRecord = pChangeData.instance.getValue(pChangeData.changes[i].rowKey, 'idrecord');
               this.log.trace("Generic Change Handler for TuiGrid Fired, Entity ".concat(tmpEntity, " IDRecord ").concat(tmpIDRecord, " setting Column [").concat(pChangeData.changes[i].value, "] to new Value [").concat(pChangeData.changes[i].value, "]"));
-
-              //if (pChangeData.changes[i].columnName == 'some_important_column')
-              //{
-              //if (pChangeData.changes[i].value > some_important_threshold)
-              //{
-              // Do something
-              //}
-              //}
               if (this.options.ColumnsToSolveOnChange.hasOwnProperty(pChangeData.changes[i].columnName)) {
                 tmpSolverNecessary = true;
               }
@@ -965,7 +1321,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }, {
           key: "onAfterInitialRender",
           value: function onAfterInitialRender() {
-            var _this8 = this;
+            var _this9 = this;
             // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
             // Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
             if (!this._tuiGridPrototype) {
@@ -1051,17 +1407,39 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             var libTuiGrid = this._tuiGridPrototype;
             this.tuiGrid = new libTuiGrid(this.gridSettings);
             this.tuiGrid.on('beforeChange', function (pChangeData) {
-              _this8.preChangeHandler(pChangeData);
+              _this9.preChangeHandler(pChangeData);
             });
             this.tuiGrid.on('afterChange', function (pChangeData) {
-              _this8.changeHandler(pChangeData);
+              _this9.changeHandler(pChangeData);
             });
           }
+
+          /**
+           * This is expected to be overloaded with anything that needs to be added to the grid configuration
+           * before the Toast UI Grid component is initialized in the browser.
+           */
         }, {
           key: "customConfigureGridSettings",
           value: function customConfigureGridSettings() {
             // This can be overloaded to tweak up the this.gridSettings
           }
+
+          /**
+           * Lookup a specific record in the toast ui grid data set by value and pull the value from the map into the browser.
+           * 
+           * This function exists because if we mutate data in the map of plain javascript records tuigrid
+           * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
+           * is because they don't want to refresh until all the data has changed.
+           * 
+           * The best practice has been to have a hidden column behind the tuigrid that maps the correct entity
+           * value set to the record in the map (e.g. IDRecord in one column and Entity in another).
+           * 
+           * @param {string} pCellColumnToBeSet - the Column hash to set
+           * @param {string} pCellValueToSet - Value to be set 
+           * @param {string} pLookupValue - the Value to look up in tuigrid
+           * @param {string} pLookupColumn - the key of the column in the tuigrid record (which are plain javascript objects defined by the tuigrid config)
+           * @returns 
+           */
         }, {
           key: "SetGridValue",
           value: function SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn) {
@@ -1081,6 +1459,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid grid!"));
             }
           }
+
+          /**
+           * Lookup a specific record in the toast ui grid data set by row key and pull in a column.
+           * 
+           * This function exists because if we mutate data in the map of plain javascript records tuigrid
+           * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
+           * is because they don't want to refresh until all the data has changed.
+           * 
+           * 
+           * @param {string} pCellColumnToBeSet - the Column hash to set
+           * @param {string} pCellValueToSet - Value to be set 
+           * @param {string} pRowKey - the key of the row to be set
+           * @returns 
+           */
         }, {
           key: "SetGridValueByRowKey",
           value: function SetGridValueByRowKey(pCellColumnToBeSet, pCellValueToSet, pRowKey) {
@@ -1101,8 +1493,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       "./Pict-Section-TuiGrid-DefaultConfiguration.json": 3,
       "./Pict-TuiGrid-Editors.js": 7,
-      "./Pict-TuiGrid-Formatters.js": 8,
-      "./Pict-TuiGrid-Headers.js": 9,
+      "./Pict-TuiGrid-Headers.js": 8,
       "pict-view": 2
     }],
     5: [function (require, module, exports) {
@@ -1185,27 +1576,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "./Pict-TuiGrid-Editor-Text.js": 6
     }],
     8: [function (require, module, exports) {
-      // Static functions for formatting data in the grid.
-      var tuiGridFormatters = {};
-      tuiGridFormatters.FormatterTwoDigitNumber = function (pCell) {
-        var tmpCellValue = Number.parseFloat(pCell.value).toFixed(2);
-        if (isNaN(tmpCellValue)) {
-          return '';
-        } else {
-          return tmpCellValue;
-        }
-      };
-      tuiGridFormatters.FormatterCurrencyNumber = function (pCell) {
-        var tmpCellValue = tuiGridFormatters.FormatterTwoDigitNumber(pCell);
-        if (tmpCellValue == '') {
-          return tmpCellValue;
-        } else {
-          return "$".concat(tmpCellValue);
-        }
-      };
-      module.exports = tuiGridFormatters;
-    }, {}],
-    9: [function (require, module, exports) {
       var tuiGridHeaders = {};
 
       // Custom column header where the header is hidden
