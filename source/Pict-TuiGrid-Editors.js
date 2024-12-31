@@ -1,6 +1,5 @@
-const tuiGridHeaders = {};
-
-tuiGridHeaders.EditorNumber = require('./Pict-TuiGrid-Editor-Number.js');
-tuiGridHeaders.EditorText = require('./Pict-TuiGrid-Editor-Text.js');
-
-module.exports = tuiGridHeaders;
+module.exports =
+{
+	EditorNumber: require('./Pict-TuiGrid-Editor-Number.js'),
+	EditorText: require('./Pict-TuiGrid-Editor-Text.js'),
+};

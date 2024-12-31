@@ -1,6 +1,6 @@
 {
     "name": "pict-section-tuigrid",
-    "version": "1.0.26",
+    "version": "1.0.27",
     "description": "Pict Toast UI Grid Section",
     "main": "source/Pict-Section-TuiGrid.js",
     "scripts": {
@@ -11,8 +11,10 @@
         "build": "quack build",
         "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-section-tuigrid-image:local",
         "docker-dev-run": "docker run -it -d --name pict-section-tuigrid-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-section-tuigrid\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-section-tuigrid-image:local",
-        "docker-dev-shell": "docker exec -it pict-section-tuigrid-dev /bin/bash"
+        "docker-dev-shell": "docker exec -it pict-section-tuigrid-dev /bin/bash",
+        "types": "tsc -p ."
     },
+    "types": "types/Pict-Section-TuiGrid.d.ts",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/stevenvelozo/pict-section-tuigrid.git"
@@ -27,7 +29,8 @@
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
         "pict": "^1.0.210",
-        "quackage": "^1.0.31"
+        "quackage": "^1.0.31",
+        "tui-grid": "^4.21.22"
     },
     "mocha": {
         "diff": true,
