@@ -11,10 +11,13 @@ class tuiCustomEditorNumber
 		tmpElement.value = String(pProperties.value);
 		tmpElement.oninput = (pElement) =>
 		{
-			const tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString()
-			if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length)
+			if (pElement.target instanceof HTMLInputElement)
 			{
-				pElement.target.value = tmpCastNumber;
+				const tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString()
+				if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length)
+				{
+					pElement.target.value = tmpCastNumber;
+				}
 			}
 		};
 

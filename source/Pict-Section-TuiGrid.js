@@ -1,5 +1,10 @@
 const libPictViewClass = require('pict-view');
 
+/**
+ * @typedef {typeof import('tui-grid').default} TuiGridClass
+ * @typedef {import('tui-grid').default} TuiGrid
+ */
+
 class PictSectionTuiGrid extends libPictViewClass
 {
 	constructor(pFable, pOptions, pServiceHash)
@@ -8,6 +13,8 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		super(pFable, tmpOptions, pServiceHash);
 
+		/** @type {{ [key: string]: any }} */
+		this.services;
 		this.dateFormatter = this.fable.instantiateServiceProviderWithoutRegistration('Dates');
 
 		this.initialRenderComplete = false;
@@ -19,9 +26,11 @@ class PictSectionTuiGrid extends libPictViewClass
 	{
 		super.onBeforeInitialize();
 
-		this._tuiGridPrototype = false;
+		/** @type {TuiGridClass} */
+		this._tuiGridPrototype = null;
 
-		this.tuiGrid = false;
+		/** @type {TuiGrid} */
+		this.tuiGrid = null;
 
 		this.customHeaders = require('./Pict-TuiGrid-Headers.js');
 		this.customEditors = require('./Pict-TuiGrid-Editors.js');
@@ -29,7 +38,10 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		this.columnSchema = false;
 		this.targetElementAddress = false;
-		this.gridData = false;
+		/** @type {Array<any>} */
+		this.gridData = null;
+
+		return super.onBeforeInitialize();
 	}
 
 	initializeCustomFormatters()
@@ -70,7 +82,7 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		this.customFormatters.FormatterDate = (pCell) =>
 			{
-				let tmpDate = tmpDates.dayJS.utc(pCell.value);
+				let tmpDate = this.fable.Dates.dayJS.utc(pCell.value);
 				if (pCell.dateformat)
 				{
 					return tmpDate.format(pCell.dateformat);
@@ -84,11 +96,11 @@ class PictSectionTuiGrid extends libPictViewClass
 
 	/**
 	 * Construct a tuiGrid instance and connect it to the browser's dom object for the grid.  If the
-	 * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window 
+	 * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window
 	 * object.
-	 * 
-	 * @param {object} pTuiGridPrototype - The TuiGrid prototype class expected to be loaded in the browser 
-	 * @returns 
+	 *
+	 * @param {TuiGridClass} [pTuiGridPrototype] - The TuiGrid prototype class expected to be loaded in the browser
+	 * @returns
 	 */
 	connectTuiGridPrototype(pTuiGridPrototype)
 	{
@@ -131,7 +143,7 @@ class PictSectionTuiGrid extends libPictViewClass
 
 	/**
 	 * @typedef {Object} TUIGridChangeEvent
-	 * @property {Object} instance - The TuiGrid instance that fired the event.
+	 * @property {TuiGrid} instance - The TuiGrid instance that fired the event.
 	 * @property {TUIGridCellChange[]} changes - An array of objects representing the changes to grid cell values.
 	 */
 
@@ -185,6 +197,7 @@ class PictSectionTuiGrid extends libPictViewClass
 			this.onAfterInitialRender();
 			this.initialRenderComplete = true;
 		}
+		return super.onAfterRender();
 	}
 
 	onAfterInitialRender()
@@ -228,11 +241,9 @@ class PictSectionTuiGrid extends libPictViewClass
 			this.targetElement = false;
 			return false;
 		}
-		else
-		{
-			// Just go for the first one.
-			this.targetElement = tmpTargetElementSet[0];
-		}
+
+		// Just go for the first one.
+		this.targetElement = tmpTargetElementSet[0];
 
 		// Check to see if there are any custom formatters.
 		this.columnSchema = this.options.TuiColumnSchema;
@@ -304,8 +315,20 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		let libTuiGrid = this._tuiGridPrototype;
 		this.tuiGrid = new libTuiGrid(this.gridSettings);
-		this.tuiGrid.on('beforeChange', (pChangeData) => { this.preChangeHandler(pChangeData); });
-		this.tuiGrid.on('afterChange', (pChangeData) => { this.changeHandler(pChangeData); });
+		this.tuiGrid.on('beforeChange', (pChangeData) =>
+		{
+			//TODO: the exported event type from tui-grid is incomplete so mask it here
+			/** @type {any} */
+			const tmpChangeData = pChangeData;
+			this.preChangeHandler(tmpChangeData);
+		});
+		this.tuiGrid.on('afterChange', (pChangeData) =>
+		{
+			//TODO: the exported event type from tui-grid is incomplete so mask it here
+			/** @type {any} */
+			const tmpChangeData = pChangeData;
+			this.changeHandler(tmpChangeData);
+		});
 	}
 
 	/**
@@ -319,60 +342,59 @@ class PictSectionTuiGrid extends libPictViewClass
 
 	/**
 	 * Lookup a specific record in the toast ui grid data set by value and pull the value from the map into the browser.
-	 * 
+	 *
 	 * This function exists because if we mutate data in the map of plain javascript records tuigrid
 	 * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
 	 * is because they don't want to refresh until all the data has changed.
-	 * 
+	 *
 	 * The best practice has been to have a hidden column behind the tuigrid that maps the correct entity
 	 * value set to the record in the map (e.g. IDRecord in one column and Entity in another).
-	 * 
+	 *
 	 * @param {string} pCellColumnToBeSet - the Column hash to set
-	 * @param {string} pCellValueToSet - Value to be set 
+	 * @param {string} pCellValueToSet - Value to be set
 	 * @param {string} pLookupValue - the Value to look up in tuigrid
 	 * @param {string} pLookupColumn - the key of the column in the tuigrid record (which are plain javascript objects defined by the tuigrid config)
-	 * @returns 
+	 * @return {void}
 	 */
 	SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn)
 	{
 		if (typeof (pLookupValue) == 'undefined')
 		{
 			console.log(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by [${pLookupColumn}]::[${pLookupValue}].  No valid lookup value!`);
-			return false;
+			return;
 		}
 
-		if (this.tuiGrid)
-		{
-			let tmpData = this.tuiGrid.getData();
-
-			for (let i = 0; i < tmpData.length; i++)
-			{
-				let tmpRecord = tmpData[i];
-
-				if (tmpRecord[pLookupColumn] == pLookupValue)
-				{
-					this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
-				}
-			}
-		}
-		else
+		if (!this.tuiGrid)
 		{
 			this.log.warn(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by [${pLookupColumn}]::[${pLookupValue}].  No valid grid!`);
+			return;
+		}
+
+		const tmpData = this.tuiGrid.getData();
+
+		for (let i = 0; i < tmpData.length; i++)
+		{
+			const tmpRecord = tmpData[i];
+
+			if (tmpRecord[pLookupColumn] == pLookupValue)
+			{
+				this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
+			}
 		}
 	}
 
 	/**
 	 * Lookup a specific record in the toast ui grid data set by row key and pull in a column.
-	 * 
+	 *
 	 * This function exists because if we mutate data in the map of plain javascript records tuigrid
 	 * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
 	 * is because they don't want to refresh until all the data has changed.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param {string} pCellColumnToBeSet - the Column hash to set
-	 * @param {string} pCellValueToSet - Value to be set 
+	 * @param {string} pCellValueToSet - Value to be set
 	 * @param {string} pRowKey - the key of the row to be set
-	 * @returns 
+	 * @return {boolean}
 	 */
 	SetGridValueByRowKey(pCellColumnToBeSet, pCellValueToSet, pRowKey)
 	{
@@ -382,15 +404,14 @@ class PictSectionTuiGrid extends libPictViewClass
 			return false;
 		}
 
+		if (!this.tuiGrid)
+		{
+			this.log.warn(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by row key [${pRowKey}].  No valid grid!`);
+			return false;
+		}
 
-		if (this.tuiGrid)
-		{
-			this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
-		}
-		else
-		{
-			this.log.warn(`Could not set grid value [${pCellColumnToBeSet}] = [${pCellValueToSet}] looked up by [${pLookupColumn}]::[${pLookupValue}].  No valid grid!`);
-		}
+		this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
+		return true;
 	}
 }
 

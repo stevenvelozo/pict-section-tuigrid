@@ -1,5 +1,3 @@
-const tuiGridHeaders = {};
-
 // Custom column header where the header is hidden
 class tuiCustomColumnHeaderNone
 {
@@ -22,6 +20,7 @@ class tuiCustomColumnHeaderNone
 	}
 }
 
-tuiGridHeaders.CustomColumnHeaderNone = tuiCustomColumnHeaderNone;
-
-module.exports = tuiGridHeaders;
+module.exports =
+{
+	CustomColumnHeaderNone: tuiCustomColumnHeaderNone,
+};
