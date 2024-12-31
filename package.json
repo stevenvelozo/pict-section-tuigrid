@@ -28,8 +28,8 @@
     "devDependencies": {
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
-        "pict": "^1.0.210",
-        "quackage": "^1.0.31",
+        "pict": "^1.0.227",
+        "quackage": "^1.0.36",
         "tui-grid": "^4.21.22"
     },
     "mocha": {
@@ -51,6 +51,6 @@
         ]
     },
     "dependencies": {
-        "pict-view": "^1.0.51"
+        "pict-view": "^1.0.56"
     }
 }

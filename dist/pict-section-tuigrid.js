@@ -1,6 +1,6 @@
 "use strict";
 
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 (function (f) {
@@ -50,11 +50,53 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
     return r;
   }()({
     1: [function (require, module, exports) {
+      module.exports = {
+        "name": "fable-serviceproviderbase",
+        "version": "3.0.15",
+        "description": "Simple base classes for fable services.",
+        "main": "source/Fable-ServiceProviderBase.js",
+        "scripts": {
+          "start": "node source/Fable-ServiceProviderBase.js",
+          "test": "npx mocha -u tdd -R spec",
+          "tests": "npx mocha -u tdd --exit -R spec --grep",
+          "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
+          "build": "npx quack build"
+        },
+        "mocha": {
+          "diff": true,
+          "extension": ["js"],
+          "package": "./package.json",
+          "reporter": "spec",
+          "slow": "75",
+          "timeout": "5000",
+          "ui": "tdd",
+          "watch-files": ["source/**/*.js", "test/**/*.js"],
+          "watch-ignore": ["lib/vendor"]
+        },
+        "repository": {
+          "type": "git",
+          "url": "https://github.com/stevenvelozo/fable-serviceproviderbase.git"
+        },
+        "keywords": ["entity", "behavior"],
+        "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
+        "license": "MIT",
+        "bugs": {
+          "url": "https://github.com/stevenvelozo/fable-serviceproviderbase/issues"
+        },
+        "homepage": "https://github.com/stevenvelozo/fable-serviceproviderbase",
+        "devDependencies": {
+          "fable": "^3.0.143",
+          "quackage": "^1.0.33"
+        }
+      };
+    }, {}],
+    2: [function (require, module, exports) {
       /**
       * Fable Service Base
       * @author <steven@velozo.com>
       */
 
+      const libPackage = require('../package.json');
       class FableServiceProviderBase {
         // The constructor can be used in two ways:
         // 1) With a fable, options object and service hash (the options object and service hash are optional)
@@ -66,6 +108,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           } else {
             this.fable = false;
           }
+
+          // Initialize the services map if it wasn't passed in
+          /** @type {Object} */
+          this._PackageFableServiceProvider = libPackage;
 
           // initialize options and UUID based on whether the fable was passed in or not.
           if (this.fable) {
@@ -110,9 +156,62 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
       // This is left here in case we want to go back to having different code/base class for "core" services
       module.exports.CoreServiceProviderBase = FableServiceProviderBase;
+    }, {
+      "../package.json": 1
+    }],
+    3: [function (require, module, exports) {
+      module.exports = {
+        "name": "pict-view",
+        "version": "1.0.56",
+        "description": "Pict View Base Class",
+        "main": "source/Pict-View.js",
+        "scripts": {
+          "test": "./node_modules/.bin/mocha -u tdd -R spec",
+          "start": "node source/Pict-View.js",
+          "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+          "build": "npx quack build",
+          "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-view-image:local",
+          "docker-dev-run": "docker run -it -d --name pict-view-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-view\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-view-image:local",
+          "docker-dev-shell": "docker exec -it pict-view-dev /bin/bash",
+          "types": "npx -p typescript tsc -p . --outDir types"
+        },
+        "types": "types/Pict-View.d.ts",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/stevenvelozo/pict-view.git"
+        },
+        "author": "steven velozo <steven@velozo.com>",
+        "license": "MIT",
+        "bugs": {
+          "url": "https://github.com/stevenvelozo/pict-view/issues"
+        },
+        "homepage": "https://github.com/stevenvelozo/pict-view#readme",
+        "devDependencies": {
+          "browser-env": "^3.3.0",
+          "pict": "^1.0.226",
+          "quackage": "^1.0.36",
+          "typescript": "^5.7.2"
+        },
+        "mocha": {
+          "diff": true,
+          "extension": ["js"],
+          "package": "./package.json",
+          "reporter": "spec",
+          "slow": "75",
+          "timeout": "5000",
+          "ui": "tdd",
+          "watch-files": ["source/**/*.js", "test/**/*.js"],
+          "watch-ignore": ["lib/vendor"]
+        },
+        "dependencies": {
+          "fable": "^3.0.146",
+          "fable-serviceproviderbase": "^3.0.15"
+        }
+      };
     }, {}],
-    2: [function (require, module, exports) {
+    4: [function (require, module, exports) {
       const libFableServiceBase = require('fable-serviceproviderbase');
+      const libPackage = require('../package.json');
       const defaultPictViewSettings = {
         DefaultRenderable: false,
         DefaultDestinationAddress: false,
@@ -148,7 +247,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
        * @property {string} TemplateHash] - The hash of the template to use for rendering this renderable.
        * @property {string} [DefaultTemplateRecordAddress] - The default address for resolving the data record for this renderable.
        * @property {string} [ContentDestinationAddress] - The default address (DOM CSS selector) for rendering the content of this renderable.
-       * @property {string} [RenderMethod] - The method to use when rendering the renderable ('replace', 'append', 'prepend', 'append_once').
+       * @property {string} [RenderMethod] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
        */
 
       /**
@@ -179,6 +278,8 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.options.ViewIdentifier = "AutoViewID-".concat(this.fable.getUUID());
           }
           this.serviceType = 'PictView';
+          /** @type {Object} */
+          this._Package = libPackage;
           // Convenience and consistency naming
           /** @type {import('pict') & { log: any, instantiateServiceProviderWithoutRegistration: (hash: String) => any }} */
           this.pict = this.fable;
@@ -418,6 +519,59 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         }
 
         /**
+         * Builds the render options for a renderable.
+         * 
+         * For DRY purposes on the three flavors of render.
+         * 
+         * @param {string} [pRenderableHash] - The hash of the renderable to render.
+         * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+         * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+         */
+        buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress) {
+          let tmpRenderOptions = {
+            Valid: true
+          };
+          tmpRenderOptions.RenderableHash = typeof pRenderableHash === 'string' ? pRenderableHash : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
+          if (!tmpRenderOptions.RenderableHash) {
+            this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not find a suitable RenderableHash ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable."));
+            tmpRenderOptions.Valid = false;
+          }
+          tmpRenderOptions.Renderable = this.renderables[tmpRenderOptions.RenderableHash];
+          if (!tmpRenderOptions.Renderable) {
+            this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist."));
+            tmpRenderOptions.Valid = false;
+          }
+          tmpRenderOptions.DestinationAddress = typeof pRenderDestinationAddress === 'string' ? pRenderDestinationAddress : typeof tmpRenderOptions.Renderable.ContentDestinationAddress === 'string' ? tmpRenderOptions.Renderable.ContentDestinationAddress : typeof this.options.DefaultDestinationAddress === 'string' ? this.options.DefaultDestinationAddress : false;
+          if (!tmpRenderOptions.DestinationAddress) {
+            this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, ") because it does not have a valid destination address (param ").concat(pRenderDestinationAddress, ")."));
+            tmpRenderOptions.Valid = false;
+          }
+          if (typeof pTemplateRecordAddress === 'object') {
+            tmpRenderOptions.RecordAddress = 'Passed in as object';
+            tmpRenderOptions.Record = pTemplateRecordAddress;
+          } else {
+            tmpRenderOptions.RecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderOptions.Renderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderOptions.Renderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
+            tmpRenderOptions.Record = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
+          }
+          return tmpRenderOptions;
+        }
+
+        /**
+         * Assigns the content to the destination address.
+         * 
+         * For DRY purposes on the three flavors of render.
+         * 
+         * @param {Renderable} pRenderable - The renderable to render.
+         * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
+         * @param {string} pContent - The content to render.
+         * @returns {boolean} - Returns true if the content was assigned successfully.
+         * @memberof PictView
+         */
+        assignRenderContent(pRenderable, pRenderDestinationAddress, pContent) {
+          return this.pict.ContentAssignment.projectContent(pRenderable.RenderMethod, pRenderDestinationAddress, pContent, pRenderable.TestAddress);
+        }
+
+        /**
          * Render a renderable from this view.
          *
          * @param {string} [pRenderable] - The hash of the renderable to render.
@@ -465,26 +619,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
 
           // Assign the content to the destination address
-          switch (tmpRenderable.RenderMethod) {
-            case 'append':
-              this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, tmpContent);
-              break;
-            case 'prepend':
-              this.pict.ContentAssignment.prependContent(tmpRenderDestinationAddress, tmpContent);
-              break;
-            case 'append_once':
-              // Try to find the content in the destination address
-              let tmpExistingContent = this.pict.ContentAssignment.getElement("#".concat(tmpRenderableHash));
-              if (tmpExistingContent.length < 1) {
-                this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, tmpContent);
-              }
-              break;
-            case 'replace':
-            // TODO: Should this be the default?
-            default:
-              this.pict.ContentAssignment.assignContent(tmpRenderDestinationAddress, tmpContent);
-              break;
-          }
+          this.pict.ContentAssignment.projectContent(tmpRenderable.RenderMethod, tmpRenderDestinationAddress, tmpContent, tmpRenderable.TestAddress);
 
           // Execute the developer-overridable post-render behavior
           this.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord, tmpContent);
@@ -559,26 +694,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
               if (this.pict.LogNoisiness > 0) {
                 this.log.trace("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " Assigning Renderable[").concat(tmpRenderableHash, "] content length ").concat(pContent.length, " to Destination [").concat(tmpRenderDestinationAddress, "] using Async render method ").concat(tmpRenderable.RenderMethod, "."));
               }
-
-              // Assign the content to the destination address
-              switch (tmpRenderable.RenderMethod) {
-                case 'append':
-                  this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, pContent);
-                  break;
-                case 'prepend':
-                  this.pict.ContentAssignment.prependContent(tmpRenderDestinationAddress, pContent);
-                  break;
-                case 'append_once':
-                  // Try to find the content in the destination address
-                  let tmpExistingContent = this.pict.ContentAssignment.getElement("#".concat(tmpRenderableHash));
-                  if (tmpExistingContent.length < 1) {
-                    this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, pContent);
-                  }
-                case 'replace':
-                default:
-                  this.pict.ContentAssignment.assignContent(tmpRenderDestinationAddress, pContent);
-                  break;
-              }
+              this.pict.ContentAssignment.projectContent(tmpRenderable.RenderMethod, tmpRenderDestinationAddress, pContent, tmpRenderable.TestAddress);
 
               // Execute the developer-overridable asynchronous post-render behavior
               this.lastRenderedTimestamp = this.pict.log.getTimeStamp();
@@ -600,6 +716,35 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         renderDefaultAsync(fCallback) {
           // Render the default renderable
           this.renderAsync(fCallback);
+        }
+        basicRender(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
+          let tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+          if (tmpRenderOptions.Valid) {
+            this.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, null, [this]));
+            return true;
+          } else {
+            this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid."));
+            return false;
+          }
+        }
+        basicRenderAsync(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
+          // Allow the callback to be passed in as the last parameter no matter what
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderable === 'function' ? pRenderable : false;
+          let tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+          if (tmpRenderOptions.Valid) {
+            this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, (pError, pContent) => {
+              if (pError) {
+                this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderOptions.RenderableHash, " because it did not parse the template."), pError);
+                return tmpCallback(pError);
+              }
+              this.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, pContent);
+              return tmpCallback();
+            }, [this]);
+          } else {
+            let tmpErrorMessage = "PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid.");
+            this.log.error(tmpErrorMessage);
+            return tmpCallback(tmpErrorMessage);
+          }
         }
 
         /**
@@ -956,9 +1101,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
       }
       module.exports = PictView;
     }, {
-      "fable-serviceproviderbase": 1
+      "../package.json": 3,
+      "fable-serviceproviderbase": 2
     }],
-    3: [function (require, module, exports) {
+    5: [function (require, module, exports) {
       module.exports = {
         "RenderOnLoad": true,
         "GridWidth": "auto",
@@ -1054,26 +1200,41 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         }]
       };
     }, {}],
-    4: [function (require, module, exports) {
+    6: [function (require, module, exports) {
       const libPictViewClass = require('pict-view');
+
+      /**
+       * @typedef {typeof import('tui-grid').default} TuiGridClass
+       * @typedef {import('tui-grid').default} TuiGrid
+       */
+
       class PictSectionTuiGrid extends libPictViewClass {
         constructor(pFable, pOptions, pServiceHash) {
           let tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
           super(pFable, tmpOptions, pServiceHash);
+
+          /** @type {{ [key: string]: any }} */
+          this.services;
           this.dateFormatter = this.fable.instantiateServiceProviderWithoutRegistration('Dates');
           this.initialRenderComplete = false;
           this.customFormatters = {};
         }
         onBeforeInitialize() {
           super.onBeforeInitialize();
-          this._tuiGridPrototype = false;
-          this.tuiGrid = false;
+
+          /** @type {TuiGridClass} */
+          this._tuiGridPrototype = null;
+
+          /** @type {TuiGrid} */
+          this.tuiGrid = null;
           this.customHeaders = require('./Pict-TuiGrid-Headers.js');
           this.customEditors = require('./Pict-TuiGrid-Editors.js');
           this.initializeCustomFormatters();
           this.columnSchema = false;
           this.targetElementAddress = false;
-          this.gridData = false;
+          /** @type {Array<any>} */
+          this.gridData = null;
+          return super.onBeforeInitialize();
         }
         initializeCustomFormatters() {
           this.customFormatters.FormatterTwoDigitNumber = pCell => {
@@ -1103,7 +1264,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             }
           };
           this.customFormatters.FormatterDate = pCell => {
-            let tmpDate = tmpDates.dayJS.utc(pCell.value);
+            let tmpDate = this.fable.Dates.dayJS.utc(pCell.value);
             if (pCell.dateformat) {
               return tmpDate.format(pCell.dateformat);
             } else {
@@ -1114,11 +1275,11 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
         /**
          * Construct a tuiGrid instance and connect it to the browser's dom object for the grid.  If the
-         * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window 
+         * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window
          * object.
-         * 
-         * @param {object} pTuiGridPrototype - The TuiGrid prototype class expected to be loaded in the browser 
-         * @returns 
+         *
+         * @param {TuiGridClass} [pTuiGridPrototype] - The TuiGrid prototype class expected to be loaded in the browser
+         * @returns
          */
         connectTuiGridPrototype(pTuiGridPrototype) {
           if (typeof pTuiGridPrototype != 'undefined') {
@@ -1151,7 +1312,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
         /**
          * @typedef {Object} TUIGridChangeEvent
-         * @property {Object} instance - The TuiGrid instance that fired the event.
+         * @property {TuiGrid} instance - The TuiGrid instance that fired the event.
          * @property {TUIGridCellChange[]} changes - An array of objects representing the changes to grid cell values.
          */
 
@@ -1192,6 +1353,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.onAfterInitialRender();
             this.initialRenderComplete = true;
           }
+          return super.onAfterRender();
         }
         onAfterInitialRender() {
           // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
@@ -1221,10 +1383,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.log.error("Could not find target element [".concat(this.options.TargetElementAddress, "] for TuiGrid!  Rendering won't function properly."));
             this.targetElement = false;
             return false;
-          } else {
-            // Just go for the first one.
-            this.targetElement = tmpTargetElementSet[0];
           }
+
+          // Just go for the first one.
+          this.targetElement = tmpTargetElementSet[0];
 
           // Check to see if there are any custom formatters.
           this.columnSchema = this.options.TuiColumnSchema;
@@ -1279,10 +1441,16 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           let libTuiGrid = this._tuiGridPrototype;
           this.tuiGrid = new libTuiGrid(this.gridSettings);
           this.tuiGrid.on('beforeChange', pChangeData => {
-            this.preChangeHandler(pChangeData);
+            //TODO: the exported event type from tui-grid is incomplete so mask it here
+            /** @type {any} */
+            const tmpChangeData = pChangeData;
+            this.preChangeHandler(tmpChangeData);
           });
           this.tuiGrid.on('afterChange', pChangeData => {
-            this.changeHandler(pChangeData);
+            //TODO: the exported event type from tui-grid is incomplete so mask it here
+            /** @type {any} */
+            const tmpChangeData = pChangeData;
+            this.changeHandler(tmpChangeData);
           });
         }
 
@@ -1296,72 +1464,73 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
         /**
          * Lookup a specific record in the toast ui grid data set by value and pull the value from the map into the browser.
-         * 
+         *
          * This function exists because if we mutate data in the map of plain javascript records tuigrid
          * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
          * is because they don't want to refresh until all the data has changed.
-         * 
+         *
          * The best practice has been to have a hidden column behind the tuigrid that maps the correct entity
          * value set to the record in the map (e.g. IDRecord in one column and Entity in another).
-         * 
+         *
          * @param {string} pCellColumnToBeSet - the Column hash to set
-         * @param {string} pCellValueToSet - Value to be set 
+         * @param {string} pCellValueToSet - Value to be set
          * @param {string} pLookupValue - the Value to look up in tuigrid
          * @param {string} pLookupColumn - the key of the column in the tuigrid record (which are plain javascript objects defined by the tuigrid config)
-         * @returns 
+         * @return {void}
          */
         SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn) {
           if (typeof pLookupValue == 'undefined') {
             console.log("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid lookup value!"));
-            return false;
+            return;
           }
-          if (this.tuiGrid) {
-            let tmpData = this.tuiGrid.getData();
-            for (let i = 0; i < tmpData.length; i++) {
-              let tmpRecord = tmpData[i];
-              if (tmpRecord[pLookupColumn] == pLookupValue) {
-                this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
-              }
-            }
-          } else {
+          if (!this.tuiGrid) {
             this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid grid!"));
+            return;
+          }
+          const tmpData = this.tuiGrid.getData();
+          for (let i = 0; i < tmpData.length; i++) {
+            const tmpRecord = tmpData[i];
+            if (tmpRecord[pLookupColumn] == pLookupValue) {
+              this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
+            }
           }
         }
 
         /**
          * Lookup a specific record in the toast ui grid data set by row key and pull in a column.
-         * 
+         *
          * This function exists because if we mutate data in the map of plain javascript records tuigrid
          * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
          * is because they don't want to refresh until all the data has changed.
-         * 
-         * 
+         *
+         *
          * @param {string} pCellColumnToBeSet - the Column hash to set
-         * @param {string} pCellValueToSet - Value to be set 
+         * @param {string} pCellValueToSet - Value to be set
          * @param {string} pRowKey - the key of the row to be set
-         * @returns 
+         * @return {boolean}
          */
         SetGridValueByRowKey(pCellColumnToBeSet, pCellValueToSet, pRowKey) {
           if (typeof pRowKey == 'undefined') {
             this.log.error("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by row key [").concat(pRowKey, "].  No valid row key!"));
             return false;
           }
-          if (this.tuiGrid) {
-            this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
-          } else {
-            this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid grid!"));
+          if (!this.tuiGrid) {
+            this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by row key [").concat(pRowKey, "].  No valid grid!"));
+            return false;
           }
+          this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
+          return true;
         }
       }
       module.exports = PictSectionTuiGrid;
       module.exports.default_configuration = require('./Pict-Section-TuiGrid-DefaultConfiguration.json');
     }, {
-      "./Pict-Section-TuiGrid-DefaultConfiguration.json": 3,
-      "./Pict-TuiGrid-Editors.js": 7,
-      "./Pict-TuiGrid-Headers.js": 8,
-      "pict-view": 2
+      "./Pict-Section-TuiGrid-DefaultConfiguration.json": 5,
+      "./Pict-TuiGrid-Editors.js": 9,
+      "./Pict-TuiGrid-Headers.js": 10,
+      "pict-view": 4
     }],
-    5: [function (require, module, exports) {
+    7: [function (require, module, exports) {
       // Custom number editor class with an option for precision
       class tuiCustomEditorNumber {
         constructor(pProperties) {
@@ -1370,9 +1539,11 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           tmpElement.type = 'number';
           tmpElement.value = String(pProperties.value);
           tmpElement.oninput = pElement => {
-            const tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString();
-            if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length) {
-              pElement.target.value = tmpCastNumber;
+            if (pElement.target instanceof HTMLInputElement) {
+              const tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString();
+              if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length) {
+                pElement.target.value = tmpCastNumber;
+              }
             }
           };
           this.Element = tmpElement;
@@ -1389,7 +1560,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
       }
       module.exports = tuiCustomEditorNumber;
     }, {}],
-    6: [function (require, module, exports) {
+    8: [function (require, module, exports) {
       // Custom number editor class with an option for precision
       class tuiCustomEditorText {
         constructor(pProperties) {
@@ -1415,18 +1586,16 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
       }
       module.exports = tuiCustomEditorText;
     }, {}],
-    7: [function (require, module, exports) {
-      const tuiGridHeaders = {};
-      tuiGridHeaders.EditorNumber = require('./Pict-TuiGrid-Editor-Number.js');
-      tuiGridHeaders.EditorText = require('./Pict-TuiGrid-Editor-Text.js');
-      module.exports = tuiGridHeaders;
+    9: [function (require, module, exports) {
+      module.exports = {
+        EditorNumber: require('./Pict-TuiGrid-Editor-Number.js'),
+        EditorText: require('./Pict-TuiGrid-Editor-Text.js')
+      };
     }, {
-      "./Pict-TuiGrid-Editor-Number.js": 5,
-      "./Pict-TuiGrid-Editor-Text.js": 6
+      "./Pict-TuiGrid-Editor-Number.js": 7,
+      "./Pict-TuiGrid-Editor-Text.js": 8
     }],
-    8: [function (require, module, exports) {
-      const tuiGridHeaders = {};
-
+    10: [function (require, module, exports) {
       // Custom column header where the header is hidden
       class tuiCustomColumnHeaderNone {
         constructor() {
@@ -1442,8 +1611,9 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           // Noop!
         }
       }
-      tuiGridHeaders.CustomColumnHeaderNone = tuiCustomColumnHeaderNone;
-      module.exports = tuiGridHeaders;
+      module.exports = {
+        CustomColumnHeaderNone: tuiCustomColumnHeaderNone
+      };
     }, {}]
-  }, {}, [4])(4);
+  }, {}, [6])(6);
 });

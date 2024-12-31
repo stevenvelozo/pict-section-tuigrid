@@ -1,18 +1,19 @@
 "use strict";
 
-function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _superPropGet(t, o, e, r) { var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e); return 2 & r && "function" == typeof p ? function (t) { return p.apply(e, t); } : p; }
+function _get() { return _get = "undefined" != typeof Reflect && Reflect.get ? Reflect.get.bind() : function (e, t, r) { var p = _superPropBase(e, t); if (p) { var n = Object.getOwnPropertyDescriptor(p, t); return n.get ? n.get.call(arguments.length < 3 ? e : r) : n.value; } }, _get.apply(null, arguments); }
+function _superPropBase(t, o) { for (; !{}.hasOwnProperty.call(t, o) && null !== (t = _getPrototypeOf(t));); return t; }
 function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -63,10 +64,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return r;
   }()({
     1: [function (require, module, exports) {
+      module.exports = {
+        "name": "fable-serviceproviderbase",
+        "version": "3.0.15",
+        "description": "Simple base classes for fable services.",
+        "main": "source/Fable-ServiceProviderBase.js",
+        "scripts": {
+          "start": "node source/Fable-ServiceProviderBase.js",
+          "test": "npx mocha -u tdd -R spec",
+          "tests": "npx mocha -u tdd --exit -R spec --grep",
+          "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
+          "build": "npx quack build"
+        },
+        "mocha": {
+          "diff": true,
+          "extension": ["js"],
+          "package": "./package.json",
+          "reporter": "spec",
+          "slow": "75",
+          "timeout": "5000",
+          "ui": "tdd",
+          "watch-files": ["source/**/*.js", "test/**/*.js"],
+          "watch-ignore": ["lib/vendor"]
+        },
+        "repository": {
+          "type": "git",
+          "url": "https://github.com/stevenvelozo/fable-serviceproviderbase.git"
+        },
+        "keywords": ["entity", "behavior"],
+        "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
+        "license": "MIT",
+        "bugs": {
+          "url": "https://github.com/stevenvelozo/fable-serviceproviderbase/issues"
+        },
+        "homepage": "https://github.com/stevenvelozo/fable-serviceproviderbase",
+        "devDependencies": {
+          "fable": "^3.0.143",
+          "quackage": "^1.0.33"
+        }
+      };
+    }, {}],
+    2: [function (require, module, exports) {
       /**
       * Fable Service Base
       * @author <steven@velozo.com>
       */
+
+      var libPackage = require('../package.json');
       var FableServiceProviderBase = /*#__PURE__*/function () {
         // The constructor can be used in two ways:
         // 1) With a fable, options object and service hash (the options object and service hash are optional)
@@ -79,6 +123,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           } else {
             this.fable = false;
           }
+
+          // Initialize the services map if it wasn't passed in
+          /** @type {Object} */
+          this._PackageFableServiceProvider = libPackage;
 
           // initialize options and UUID based on whether the fable was passed in or not.
           if (this.fable) {
@@ -126,9 +174,62 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // This is left here in case we want to go back to having different code/base class for "core" services
       module.exports.CoreServiceProviderBase = FableServiceProviderBase;
+    }, {
+      "../package.json": 1
+    }],
+    3: [function (require, module, exports) {
+      module.exports = {
+        "name": "pict-view",
+        "version": "1.0.56",
+        "description": "Pict View Base Class",
+        "main": "source/Pict-View.js",
+        "scripts": {
+          "test": "./node_modules/.bin/mocha -u tdd -R spec",
+          "start": "node source/Pict-View.js",
+          "coverage": "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov ./node_modules/mocha/bin/_mocha -- -u tdd -R spec",
+          "build": "npx quack build",
+          "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-view-image:local",
+          "docker-dev-run": "docker run -it -d --name pict-view-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-view\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-view-image:local",
+          "docker-dev-shell": "docker exec -it pict-view-dev /bin/bash",
+          "types": "npx -p typescript tsc -p . --outDir types"
+        },
+        "types": "types/Pict-View.d.ts",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/stevenvelozo/pict-view.git"
+        },
+        "author": "steven velozo <steven@velozo.com>",
+        "license": "MIT",
+        "bugs": {
+          "url": "https://github.com/stevenvelozo/pict-view/issues"
+        },
+        "homepage": "https://github.com/stevenvelozo/pict-view#readme",
+        "devDependencies": {
+          "browser-env": "^3.3.0",
+          "pict": "^1.0.226",
+          "quackage": "^1.0.36",
+          "typescript": "^5.7.2"
+        },
+        "mocha": {
+          "diff": true,
+          "extension": ["js"],
+          "package": "./package.json",
+          "reporter": "spec",
+          "slow": "75",
+          "timeout": "5000",
+          "ui": "tdd",
+          "watch-files": ["source/**/*.js", "test/**/*.js"],
+          "watch-ignore": ["lib/vendor"]
+        },
+        "dependencies": {
+          "fable": "^3.0.146",
+          "fable-serviceproviderbase": "^3.0.15"
+        }
+      };
     }, {}],
-    2: [function (require, module, exports) {
+    4: [function (require, module, exports) {
       var libFableServiceBase = require('fable-serviceproviderbase');
+      var libPackage = require('../package.json');
       var defaultPictViewSettings = {
         DefaultRenderable: false,
         DefaultDestinationAddress: false,
@@ -164,7 +265,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
        * @property {string} TemplateHash] - The hash of the template to use for rendering this renderable.
        * @property {string} [DefaultTemplateRecordAddress] - The default address for resolving the data record for this renderable.
        * @property {string} [ContentDestinationAddress] - The default address (DOM CSS selector) for rendering the content of this renderable.
-       * @property {string} [RenderMethod] - The method to use when rendering the renderable ('replace', 'append', 'prepend', 'append_once').
+       * @property {string} [RenderMethod] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
        */
 
       /**
@@ -197,6 +298,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _this.options.ViewIdentifier = "AutoViewID-".concat(_this.fable.getUUID());
           }
           _this.serviceType = 'PictView';
+          /** @type {Object} */
+          _this._Package = libPackage;
           // Convenience and consistency naming
           /** @type {import('pict') & { log: any, instantiateServiceProviderWithoutRegistration: (hash: String) => any }} */
           _this.pict = _this.fable;
@@ -461,6 +564,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
 
           /**
+           * Builds the render options for a renderable.
+           * 
+           * For DRY purposes on the three flavors of render.
+           * 
+           * @param {string} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+           */
+        }, {
+          key: "buildRenderOptions",
+          value: function buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress) {
+            var tmpRenderOptions = {
+              Valid: true
+            };
+            tmpRenderOptions.RenderableHash = typeof pRenderableHash === 'string' ? pRenderableHash : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
+            if (!tmpRenderOptions.RenderableHash) {
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not find a suitable RenderableHash ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable."));
+              tmpRenderOptions.Valid = false;
+            }
+            tmpRenderOptions.Renderable = this.renderables[tmpRenderOptions.RenderableHash];
+            if (!tmpRenderOptions.Renderable) {
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist."));
+              tmpRenderOptions.Valid = false;
+            }
+            tmpRenderOptions.DestinationAddress = typeof pRenderDestinationAddress === 'string' ? pRenderDestinationAddress : typeof tmpRenderOptions.Renderable.ContentDestinationAddress === 'string' ? tmpRenderOptions.Renderable.ContentDestinationAddress : typeof this.options.DefaultDestinationAddress === 'string' ? this.options.DefaultDestinationAddress : false;
+            if (!tmpRenderOptions.DestinationAddress) {
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderOptions.RenderableHash, " (param ").concat(pRenderableHash, ") because it does not have a valid destination address (param ").concat(pRenderDestinationAddress, ")."));
+              tmpRenderOptions.Valid = false;
+            }
+            if (_typeof(pTemplateRecordAddress) === 'object') {
+              tmpRenderOptions.RecordAddress = 'Passed in as object';
+              tmpRenderOptions.Record = pTemplateRecordAddress;
+            } else {
+              tmpRenderOptions.RecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderOptions.Renderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderOptions.Renderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
+              tmpRenderOptions.Record = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
+            }
+            return tmpRenderOptions;
+          }
+
+          /**
+           * Assigns the content to the destination address.
+           * 
+           * For DRY purposes on the three flavors of render.
+           * 
+           * @param {Renderable} pRenderable - The renderable to render.
+           * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
+           * @param {string} pContent - The content to render.
+           * @returns {boolean} - Returns true if the content was assigned successfully.
+           * @memberof PictView
+           */
+        }, {
+          key: "assignRenderContent",
+          value: function assignRenderContent(pRenderable, pRenderDestinationAddress, pContent) {
+            return this.pict.ContentAssignment.projectContent(pRenderable.RenderMethod, pRenderDestinationAddress, pContent, pRenderable.TestAddress);
+          }
+
+          /**
            * Render a renderable from this view.
            *
            * @param {string} [pRenderable] - The hash of the renderable to render.
@@ -510,26 +670,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
 
             // Assign the content to the destination address
-            switch (tmpRenderable.RenderMethod) {
-              case 'append':
-                this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, tmpContent);
-                break;
-              case 'prepend':
-                this.pict.ContentAssignment.prependContent(tmpRenderDestinationAddress, tmpContent);
-                break;
-              case 'append_once':
-                // Try to find the content in the destination address
-                var tmpExistingContent = this.pict.ContentAssignment.getElement("#".concat(tmpRenderableHash));
-                if (tmpExistingContent.length < 1) {
-                  this.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, tmpContent);
-                }
-                break;
-              case 'replace':
-              // TODO: Should this be the default?
-              default:
-                this.pict.ContentAssignment.assignContent(tmpRenderDestinationAddress, tmpContent);
-                break;
-            }
+            this.pict.ContentAssignment.projectContent(tmpRenderable.RenderMethod, tmpRenderDestinationAddress, tmpContent, tmpRenderable.TestAddress);
 
             // Execute the developer-overridable post-render behavior
             this.onAfterRender(tmpRenderable, tmpRenderDestinationAddress, tmpRecord, tmpContent);
@@ -607,26 +748,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 if (_this3.pict.LogNoisiness > 0) {
                   _this3.log.trace("PictView [".concat(_this3.UUID, "]::[").concat(_this3.Hash, "] ").concat(_this3.options.ViewIdentifier, " Assigning Renderable[").concat(tmpRenderableHash, "] content length ").concat(pContent.length, " to Destination [").concat(tmpRenderDestinationAddress, "] using Async render method ").concat(tmpRenderable.RenderMethod, "."));
                 }
-
-                // Assign the content to the destination address
-                switch (tmpRenderable.RenderMethod) {
-                  case 'append':
-                    _this3.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, pContent);
-                    break;
-                  case 'prepend':
-                    _this3.pict.ContentAssignment.prependContent(tmpRenderDestinationAddress, pContent);
-                    break;
-                  case 'append_once':
-                    // Try to find the content in the destination address
-                    var tmpExistingContent = _this3.pict.ContentAssignment.getElement("#".concat(tmpRenderableHash));
-                    if (tmpExistingContent.length < 1) {
-                      _this3.pict.ContentAssignment.appendContent(tmpRenderDestinationAddress, pContent);
-                    }
-                  case 'replace':
-                  default:
-                    _this3.pict.ContentAssignment.assignContent(tmpRenderDestinationAddress, pContent);
-                    break;
-                }
+                _this3.pict.ContentAssignment.projectContent(tmpRenderable.RenderMethod, tmpRenderDestinationAddress, pContent, tmpRenderable.TestAddress);
 
                 // Execute the developer-overridable asynchronous post-render behavior
                 _this3.lastRenderedTimestamp = _this3.pict.log.getTimeStamp();
@@ -650,6 +772,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           value: function renderDefaultAsync(fCallback) {
             // Render the default renderable
             this.renderAsync(fCallback);
+          }
+        }, {
+          key: "basicRender",
+          value: function basicRender(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
+            var tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+            if (tmpRenderOptions.Valid) {
+              this.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, null, [this]));
+              return true;
+            } else {
+              this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid."));
+              return false;
+            }
+          }
+        }, {
+          key: "basicRenderAsync",
+          value: function basicRenderAsync(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
+            var _this4 = this;
+            // Allow the callback to be passed in as the last parameter no matter what
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderable === 'function' ? pRenderable : false;
+            var tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+            if (tmpRenderOptions.Valid) {
+              this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, function (pError, pContent) {
+                if (pError) {
+                  _this4.log.error("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderOptions.RenderableHash, " because it did not parse the template."), pError);
+                  return tmpCallback(pError);
+                }
+                _this4.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, pContent);
+                return tmpCallback();
+              }, [this]);
+            } else {
+              var tmpErrorMessage = "PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid.");
+              this.log.error(tmpErrorMessage);
+              return tmpCallback(tmpErrorMessage);
+            }
           }
 
           /**
@@ -757,14 +913,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }, {
           key: "solveAsync",
           value: function solveAsync(fCallback) {
-            var _this4 = this;
+            var _this5 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
             var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " solveAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
                 if (pError) {
-                  _this4.log.error("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.Name, " solveAsync Auto Callback Error: ").concat(pError), pError);
+                  _this5.log.error("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.Name, " solveAsync Auto Callback Error: ").concat(pError), pError);
                 }
               };
             }
@@ -772,10 +928,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             tmpAnticipate.anticipate(this.onSolveAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterSolveAsync.bind(this));
             tmpAnticipate.wait(function (pError) {
-              if (_this4.pict.LogNoisiness > 2) {
-                _this4.log.trace("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.ViewIdentifier, " solveAsync() complete."));
+              if (_this5.pict.LogNoisiness > 2) {
+                _this5.log.trace("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.ViewIdentifier, " solveAsync() complete."));
               }
-              _this4.lastSolvedTimestamp = _this4.pict.log.getTimeStamp();
+              _this5.lastSolvedTimestamp = _this5.pict.log.getTimeStamp();
               return tmpCallback(pError);
             });
           }
@@ -883,14 +1039,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }, {
           key: "marshalFromViewAsync",
           value: function marshalFromViewAsync(fCallback) {
-            var _this5 = this;
+            var _this6 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
             var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalFromViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
                 if (pError) {
-                  _this5.log.error("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.Name, " marshalFromViewAsync Auto Callback Error: ").concat(pError), pError);
+                  _this6.log.error("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.Name, " marshalFromViewAsync Auto Callback Error: ").concat(pError), pError);
                 }
               };
             }
@@ -898,10 +1054,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             tmpAnticipate.anticipate(this.onMarshalFromViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterMarshalFromViewAsync.bind(this));
             tmpAnticipate.wait(function (pError) {
-              if (_this5.pict.LogNoisiness > 2) {
-                _this5.log.trace("PictView [".concat(_this5.UUID, "]::[").concat(_this5.Hash, "] ").concat(_this5.options.ViewIdentifier, " marshalFromViewAsync() complete."));
+              if (_this6.pict.LogNoisiness > 2) {
+                _this6.log.trace("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.ViewIdentifier, " marshalFromViewAsync() complete."));
               }
-              _this5.lastMarshalFromViewTimestamp = _this5.pict.log.getTimeStamp();
+              _this6.lastMarshalFromViewTimestamp = _this6.pict.log.getTimeStamp();
               return tmpCallback(pError);
             });
           }
@@ -1007,14 +1163,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }, {
           key: "marshalToViewAsync",
           value: function marshalToViewAsync(fCallback) {
-            var _this6 = this;
+            var _this7 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
             var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalToViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
                 if (pError) {
-                  _this6.log.error("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.Name, " marshalToViewAsync Auto Callback Error: ").concat(pError), pError);
+                  _this7.log.error("PictView [".concat(_this7.UUID, "]::[").concat(_this7.Hash, "] ").concat(_this7.options.Name, " marshalToViewAsync Auto Callback Error: ").concat(pError), pError);
                 }
               };
             }
@@ -1022,10 +1178,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             tmpAnticipate.anticipate(this.onMarshalToViewAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterMarshalToViewAsync.bind(this));
             tmpAnticipate.wait(function (pError) {
-              if (_this6.pict.LogNoisiness > 2) {
-                _this6.log.trace("PictView [".concat(_this6.UUID, "]::[").concat(_this6.Hash, "] ").concat(_this6.options.ViewIdentifier, " marshalToViewAsync() complete."));
+              if (_this7.pict.LogNoisiness > 2) {
+                _this7.log.trace("PictView [".concat(_this7.UUID, "]::[").concat(_this7.Hash, "] ").concat(_this7.options.ViewIdentifier, " marshalToViewAsync() complete."));
               }
-              _this6.lastMarshalToViewTimestamp = _this6.pict.log.getTimeStamp();
+              _this7.lastMarshalToViewTimestamp = _this7.pict.log.getTimeStamp();
               return tmpCallback(pError);
             });
           }
@@ -1064,9 +1220,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }(libFableServiceBase);
       module.exports = PictView;
     }, {
-      "fable-serviceproviderbase": 1
+      "../package.json": 3,
+      "fable-serviceproviderbase": 2
     }],
-    3: [function (require, module, exports) {
+    5: [function (require, module, exports) {
       module.exports = {
         "RenderOnLoad": true,
         "GridWidth": "auto",
@@ -1162,37 +1319,51 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }]
       };
     }, {}],
-    4: [function (require, module, exports) {
+    6: [function (require, module, exports) {
       var libPictViewClass = require('pict-view');
+
+      /**
+       * @typedef {typeof import('tui-grid').default} TuiGridClass
+       * @typedef {import('tui-grid').default} TuiGrid
+       */
       var PictSectionTuiGrid = /*#__PURE__*/function (_libPictViewClass) {
         function PictSectionTuiGrid(pFable, pOptions, pServiceHash) {
-          var _this7;
+          var _this8;
           _classCallCheck(this, PictSectionTuiGrid);
           var tmpOptions = Object.assign({}, require('./Pict-Section-TuiGrid-DefaultConfiguration.json'), pOptions);
-          _this7 = _callSuper(this, PictSectionTuiGrid, [pFable, tmpOptions, pServiceHash]);
-          _this7.dateFormatter = _this7.fable.instantiateServiceProviderWithoutRegistration('Dates');
-          _this7.initialRenderComplete = false;
-          _this7.customFormatters = {};
-          return _this7;
+          _this8 = _callSuper(this, PictSectionTuiGrid, [pFable, tmpOptions, pServiceHash]);
+
+          /** @type {{ [key: string]: any }} */
+          _this8.services;
+          _this8.dateFormatter = _this8.fable.instantiateServiceProviderWithoutRegistration('Dates');
+          _this8.initialRenderComplete = false;
+          _this8.customFormatters = {};
+          return _this8;
         }
         _inherits(PictSectionTuiGrid, _libPictViewClass);
         return _createClass(PictSectionTuiGrid, [{
           key: "onBeforeInitialize",
           value: function onBeforeInitialize() {
-            _get(_getPrototypeOf(PictSectionTuiGrid.prototype), "onBeforeInitialize", this).call(this);
-            this._tuiGridPrototype = false;
-            this.tuiGrid = false;
+            _superPropGet(PictSectionTuiGrid, "onBeforeInitialize", this, 3)([]);
+
+            /** @type {TuiGridClass} */
+            this._tuiGridPrototype = null;
+
+            /** @type {TuiGrid} */
+            this.tuiGrid = null;
             this.customHeaders = require('./Pict-TuiGrid-Headers.js');
             this.customEditors = require('./Pict-TuiGrid-Editors.js');
             this.initializeCustomFormatters();
             this.columnSchema = false;
             this.targetElementAddress = false;
-            this.gridData = false;
+            /** @type {Array<any>} */
+            this.gridData = null;
+            return _superPropGet(PictSectionTuiGrid, "onBeforeInitialize", this, 3)([]);
           }
         }, {
           key: "initializeCustomFormatters",
           value: function initializeCustomFormatters() {
-            var _this8 = this;
+            var _this9 = this;
             this.customFormatters.FormatterTwoDigitNumber = function (pCell) {
               var _pCell$decimalPrecisi;
               var tmpCellValue = Number.parseFloat(pCell.value);
@@ -1200,13 +1371,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               if (isNaN(tmpCellValue)) {
                 return '';
               } else {
-                return _this8.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+                return _this9.fable.Math.roundPrecise(pCell.value, tmpPrecision);
               }
             };
             this.customFormatters.FormatterCurrencyNumber = function (pCell) {
               var _pCell$decimalPrecisi2;
               var tmpPrecision = (_pCell$decimalPrecisi2 = pCell === null || pCell === void 0 ? void 0 : pCell.decimalPrecision) !== null && _pCell$decimalPrecisi2 !== void 0 ? _pCell$decimalPrecisi2 : 2;
-              var tmpCellValue = _this8.fable.DataFormat.formatterDollars(pCell.value, tmpPrecision);
+              var tmpCellValue = _this9.fable.DataFormat.formatterDollars(pCell.value, tmpPrecision);
               return tmpCellValue;
             };
             this.customFormatters.FormatterRoundedNumber = function (pCell) {
@@ -1216,11 +1387,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               if (isNaN(tmpCellValue)) {
                 return '';
               } else {
-                return _this8.fable.Math.roundPrecise(pCell.value, tmpPrecision);
+                return _this9.fable.Math.roundPrecise(pCell.value, tmpPrecision);
               }
             };
             this.customFormatters.FormatterDate = function (pCell) {
-              var tmpDate = tmpDates.dayJS.utc(pCell.value);
+              var tmpDate = _this9.fable.Dates.dayJS.utc(pCell.value);
               if (pCell.dateformat) {
                 return tmpDate.format(pCell.dateformat);
               } else {
@@ -1231,11 +1402,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
           /**
            * Construct a tuiGrid instance and connect it to the browser's dom object for the grid.  If the
-           * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window 
+           * prototype is not passed in, try to find a window.tui (where the library puts itself) in the window
            * object.
-           * 
-           * @param {object} pTuiGridPrototype - The TuiGrid prototype class expected to be loaded in the browser 
-           * @returns 
+           *
+           * @param {TuiGridClass} [pTuiGridPrototype] - The TuiGrid prototype class expected to be loaded in the browser
+           * @returns
            */
         }, {
           key: "connectTuiGridPrototype",
@@ -1270,7 +1441,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
           /**
            * @typedef {Object} TUIGridChangeEvent
-           * @property {Object} instance - The TuiGrid instance that fired the event.
+           * @property {TuiGrid} instance - The TuiGrid instance that fired the event.
            * @property {TUIGridCellChange[]} changes - An array of objects representing the changes to grid cell values.
            */
 
@@ -1317,11 +1488,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.onAfterInitialRender();
               this.initialRenderComplete = true;
             }
+            return _superPropGet(PictSectionTuiGrid, "onAfterRender", this, 3)([]);
           }
         }, {
           key: "onAfterInitialRender",
           value: function onAfterInitialRender() {
-            var _this9 = this;
+            var _this10 = this;
             // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
             // Check for a tuigrid prototype, and find it in the window object it if it doesn't exist
             if (!this._tuiGridPrototype) {
@@ -1349,10 +1521,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.log.error("Could not find target element [".concat(this.options.TargetElementAddress, "] for TuiGrid!  Rendering won't function properly."));
               this.targetElement = false;
               return false;
-            } else {
-              // Just go for the first one.
-              this.targetElement = tmpTargetElementSet[0];
             }
+
+            // Just go for the first one.
+            this.targetElement = tmpTargetElementSet[0];
 
             // Check to see if there are any custom formatters.
             this.columnSchema = this.options.TuiColumnSchema;
@@ -1407,10 +1579,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             var libTuiGrid = this._tuiGridPrototype;
             this.tuiGrid = new libTuiGrid(this.gridSettings);
             this.tuiGrid.on('beforeChange', function (pChangeData) {
-              _this9.preChangeHandler(pChangeData);
+              //TODO: the exported event type from tui-grid is incomplete so mask it here
+              /** @type {any} */
+              var tmpChangeData = pChangeData;
+              _this10.preChangeHandler(tmpChangeData);
             });
             this.tuiGrid.on('afterChange', function (pChangeData) {
-              _this9.changeHandler(pChangeData);
+              //TODO: the exported event type from tui-grid is incomplete so mask it here
+              /** @type {any} */
+              var tmpChangeData = pChangeData;
+              _this10.changeHandler(tmpChangeData);
             });
           }
 
@@ -1426,52 +1604,52 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
           /**
            * Lookup a specific record in the toast ui grid data set by value and pull the value from the map into the browser.
-           * 
+           *
            * This function exists because if we mutate data in the map of plain javascript records tuigrid
            * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
            * is because they don't want to refresh until all the data has changed.
-           * 
+           *
            * The best practice has been to have a hidden column behind the tuigrid that maps the correct entity
            * value set to the record in the map (e.g. IDRecord in one column and Entity in another).
-           * 
+           *
            * @param {string} pCellColumnToBeSet - the Column hash to set
-           * @param {string} pCellValueToSet - Value to be set 
+           * @param {string} pCellValueToSet - Value to be set
            * @param {string} pLookupValue - the Value to look up in tuigrid
            * @param {string} pLookupColumn - the key of the column in the tuigrid record (which are plain javascript objects defined by the tuigrid config)
-           * @returns 
+           * @return {void}
            */
         }, {
           key: "SetGridValue",
           value: function SetGridValue(pCellColumnToBeSet, pCellValueToSet, pLookupValue, pLookupColumn) {
             if (typeof pLookupValue == 'undefined') {
               console.log("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid lookup value!"));
-              return false;
+              return;
             }
-            if (this.tuiGrid) {
-              var tmpData = this.tuiGrid.getData();
-              for (var i = 0; i < tmpData.length; i++) {
-                var tmpRecord = tmpData[i];
-                if (tmpRecord[pLookupColumn] == pLookupValue) {
-                  this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
-                }
-              }
-            } else {
+            if (!this.tuiGrid) {
               this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid grid!"));
+              return;
+            }
+            var tmpData = this.tuiGrid.getData();
+            for (var i = 0; i < tmpData.length; i++) {
+              var tmpRecord = tmpData[i];
+              if (tmpRecord[pLookupColumn] == pLookupValue) {
+                this.tuiGrid.setValue(i, pCellColumnToBeSet, pCellValueToSet);
+              }
             }
           }
 
           /**
            * Lookup a specific record in the toast ui grid data set by row key and pull in a column.
-           * 
+           *
            * This function exists because if we mutate data in the map of plain javascript records tuigrid
            * manages, it doesn't automatically refresh the UI.  From reading the TUIGrid documentation, this
            * is because they don't want to refresh until all the data has changed.
-           * 
-           * 
+           *
+           *
            * @param {string} pCellColumnToBeSet - the Column hash to set
-           * @param {string} pCellValueToSet - Value to be set 
+           * @param {string} pCellValueToSet - Value to be set
            * @param {string} pRowKey - the key of the row to be set
-           * @returns 
+           * @return {boolean}
            */
         }, {
           key: "SetGridValueByRowKey",
@@ -1480,23 +1658,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.log.error("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by row key [").concat(pRowKey, "].  No valid row key!"));
               return false;
             }
-            if (this.tuiGrid) {
-              this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
-            } else {
-              this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by [").concat(pLookupColumn, "]::[").concat(pLookupValue, "].  No valid grid!"));
+            if (!this.tuiGrid) {
+              this.log.warn("Could not set grid value [".concat(pCellColumnToBeSet, "] = [").concat(pCellValueToSet, "] looked up by row key [").concat(pRowKey, "].  No valid grid!"));
+              return false;
             }
+            this.tuiGrid.setValue(pRowKey, pCellColumnToBeSet, pCellValueToSet);
+            return true;
           }
         }]);
       }(libPictViewClass);
       module.exports = PictSectionTuiGrid;
       module.exports.default_configuration = require('./Pict-Section-TuiGrid-DefaultConfiguration.json');
     }, {
-      "./Pict-Section-TuiGrid-DefaultConfiguration.json": 3,
-      "./Pict-TuiGrid-Editors.js": 7,
-      "./Pict-TuiGrid-Headers.js": 8,
-      "pict-view": 2
+      "./Pict-Section-TuiGrid-DefaultConfiguration.json": 5,
+      "./Pict-TuiGrid-Editors.js": 9,
+      "./Pict-TuiGrid-Headers.js": 10,
+      "pict-view": 4
     }],
-    5: [function (require, module, exports) {
+    7: [function (require, module, exports) {
       // Custom number editor class with an option for precision
       var tuiCustomEditorNumber = /*#__PURE__*/function () {
         function tuiCustomEditorNumber(pProperties) {
@@ -1506,9 +1685,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           tmpElement.type = 'number';
           tmpElement.value = String(pProperties.value);
           tmpElement.oninput = function (pElement) {
-            var tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString();
-            if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length) {
-              pElement.target.value = tmpCastNumber;
+            if (pElement.target instanceof HTMLInputElement) {
+              var tmpCastNumber = parseFloat(pElement.target.value).toFixed(decimalPrecision).toString();
+              if (tmpCastNumber.length < parseFloat(pElement.target.value).toString().length) {
+                pElement.target.value = tmpCastNumber;
+              }
             }
           };
           this.Element = tmpElement;
@@ -1532,7 +1713,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }();
       module.exports = tuiCustomEditorNumber;
     }, {}],
-    6: [function (require, module, exports) {
+    8: [function (require, module, exports) {
       // Custom number editor class with an option for precision
       var tuiCustomEditorText = /*#__PURE__*/function () {
         function tuiCustomEditorText(pProperties) {
@@ -1566,18 +1747,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }();
       module.exports = tuiCustomEditorText;
     }, {}],
-    7: [function (require, module, exports) {
-      var tuiGridHeaders = {};
-      tuiGridHeaders.EditorNumber = require('./Pict-TuiGrid-Editor-Number.js');
-      tuiGridHeaders.EditorText = require('./Pict-TuiGrid-Editor-Text.js');
-      module.exports = tuiGridHeaders;
+    9: [function (require, module, exports) {
+      module.exports = {
+        EditorNumber: require('./Pict-TuiGrid-Editor-Number.js'),
+        EditorText: require('./Pict-TuiGrid-Editor-Text.js')
+      };
     }, {
-      "./Pict-TuiGrid-Editor-Number.js": 5,
-      "./Pict-TuiGrid-Editor-Text.js": 6
+      "./Pict-TuiGrid-Editor-Number.js": 7,
+      "./Pict-TuiGrid-Editor-Text.js": 8
     }],
-    8: [function (require, module, exports) {
-      var tuiGridHeaders = {};
-
+    10: [function (require, module, exports) {
       // Custom column header where the header is hidden
       var tuiCustomColumnHeaderNone = /*#__PURE__*/function () {
         function tuiCustomColumnHeaderNone() {
@@ -1599,8 +1778,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         }]);
       }();
-      tuiGridHeaders.CustomColumnHeaderNone = tuiCustomColumnHeaderNone;
-      module.exports = tuiGridHeaders;
+      module.exports = {
+        CustomColumnHeaderNone: tuiCustomColumnHeaderNone
+      };
     }, {}]
-  }, {}, [4])(4);
+  }, {}, [6])(6);
 });
