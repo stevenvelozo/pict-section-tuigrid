@@ -187,54 +187,7 @@ declare namespace PictSectionTuiGrid {
     export { default_configuration, TuiGridClass, TuiGrid };
 }
 import libPictViewClass = require("pict-view");
-declare const default_configuration: {
-    RenderOnLoad: boolean;
-    GridWidth: string;
-    GridRowHeight: number;
-    GridBodyHeight: string;
-    GridBodyMinHeight: number;
-    GridColumnMinWidth: number;
-    GridColumnWidthResizable: boolean;
-    GridColumnHeightResizable: boolean;
-    GridColumnFrozenCount: number;
-    GridColumnFrozenBorderWidth: number;
-    GridScrollX: boolean;
-    GridScrollY: boolean;
-    GridShowDummyRows: boolean;
-    GridDraggableRows: boolean;
-    GridSelectionUnit: string;
-    DefaultRenderable: string;
-    DefaultDestinationAddress: string;
-    Templates: {
-        Hash: string;
-        Template: string;
-    }[];
-    Renderables: {
-        RenderableHash: string;
-        TemplateHash: string;
-        DestinationAddress: string;
-    }[];
-    TargetElementAddress: string;
-    GridDataAddress: boolean;
-    GridData: {
-        idrecord: number;
-        entity: string;
-        name: string;
-        description: string;
-    }[];
-    ColumnsToSolveOnChange: {};
-    TuiColumnSchema: ({
-        header: string;
-        name: string;
-        PictTriggerSolveOnChange: boolean;
-        editor?: undefined;
-    } | {
-        header: string;
-        name: string;
-        editor: string;
-        PictTriggerSolveOnChange?: undefined;
-    })[];
-};
+declare const default_configuration: Record<string, any>;
 type TuiGridClass = typeof import("tui-grid").default;
 type TuiGrid = import("tui-grid").default;
 //# sourceMappingURL=Pict-Section-TuiGrid.d.ts.map

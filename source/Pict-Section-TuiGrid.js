@@ -226,7 +226,15 @@ class PictSectionTuiGrid extends libPictViewClass
 
 		if (this.options.GridDataAddress)
 		{
-			let tmpAddressedData = this.fable.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
+			const tmpAddressSpace =
+			{
+				Fable: this.fable,
+				Pict: this.fable,
+				AppData: this.AppData,
+				Bundle: this.Bundle,
+				Options: this.options,
+			};
+			let tmpAddressedData = this.fable.manifest.getValueByHash(tmpAddressSpace, this.options.GridDataAddress);
 			if (typeof (tmpAddressedData) != 'object')
 			{
 				this.log.error(`Address for GridData [${this.options.GridDataAddress}] did not return an object; it was a ${typeof (tmpAddressedData)}.`);
@@ -289,7 +297,15 @@ class PictSectionTuiGrid extends libPictViewClass
 					&& (typeof (tmpColumn.editor.options.listItems) == 'string'))
 				{
 					// Look for this address!  For the Record object, we will pass in the options.
-					let tmpListItems = this.fable.manifest.getValueByHash({ AppData: this.AppData, Options: this.options }, tmpColumn.editor.options.listItems);
+					const tmpAddressSpace =
+					{
+						Fable: this.fable,
+						Pict: this.fable,
+						AppData: this.AppData,
+						Bundle: this.Bundle,
+						Options: this.options,
+					};
+					let tmpListItems = this.fable.manifest.getValueByHash(tmpAddressSpace, tmpColumn.editor.options.listItems);
 					if (typeof (tmpListItems) == 'object')
 					{
 						tmpColumn.editor.options.listItems = tmpListItems;
@@ -425,4 +441,5 @@ class PictSectionTuiGrid extends libPictViewClass
 
 module.exports = PictSectionTuiGrid;
 
+/** @type {Record<string, any>} */
 module.exports.default_configuration = require('./Pict-Section-TuiGrid-DefaultConfiguration.json');

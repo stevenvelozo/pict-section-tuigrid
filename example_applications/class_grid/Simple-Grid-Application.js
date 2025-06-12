@@ -14,7 +14,7 @@ const ExampleGridConfiguration = (
 	{
 		"ViewIdentifier": "ExampleGrid",
 		"TargetElementAddress": "#ExampleGridContainer",
-		"GridDataAddress": "StudentData",
+		"GridDataAddress": "AppData.StudentData",
 		"ColumnsToSolveOnChange": {
 			"quantity": true,
 			"costperunit": true,

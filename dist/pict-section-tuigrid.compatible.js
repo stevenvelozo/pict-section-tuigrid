@@ -1587,7 +1587,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               return false;
             }
             if (this.options.GridDataAddress) {
-              var tmpAddressedData = this.fable.manifest.getValueByHash(this.AppData, this.options.GridDataAddress);
+              var tmpAddressSpace = {
+                Fable: this.fable,
+                Pict: this.fable,
+                AppData: this.AppData,
+                Bundle: this.Bundle,
+                Options: this.options
+              };
+              var tmpAddressedData = this.fable.manifest.getValueByHash(tmpAddressSpace, this.options.GridDataAddress);
               if (_typeof(tmpAddressedData) != 'object') {
                 this.log.error("Address for GridData [".concat(this.options.GridDataAddress, "] did not return an object; it was a ").concat(_typeof(tmpAddressedData), "."));
                 this.gridData = [];
@@ -1632,10 +1639,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 // Look to see if there is an internal editor that matches the type
                 if (tmpColumn.editor.hasOwnProperty('options') && _typeof(tmpColumn.editor.options) == 'object' && tmpColumn.editor.options.hasOwnProperty('listItems') && typeof tmpColumn.editor.options.listItems == 'string') {
                   // Look for this address!  For the Record object, we will pass in the options.
-                  var tmpListItems = this.fable.manifest.getValueByHash({
+                  var _tmpAddressSpace = {
+                    Fable: this.fable,
+                    Pict: this.fable,
                     AppData: this.AppData,
+                    Bundle: this.Bundle,
                     Options: this.options
-                  }, tmpColumn.editor.options.listItems);
+                  };
+                  var tmpListItems = this.fable.manifest.getValueByHash(_tmpAddressSpace, tmpColumn.editor.options.listItems);
                   if (_typeof(tmpListItems) == 'object') {
                     tmpColumn.editor.options.listItems = tmpListItems;
                   } else {
@@ -1749,6 +1760,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }]);
       }(libPictViewClass);
       module.exports = PictSectionTuiGrid;
+
+      /** @type {Record<string, any>} */
       module.exports.default_configuration = require('./Pict-Section-TuiGrid-DefaultConfiguration.json');
     }, {
       "./Pict-Section-TuiGrid-DefaultConfiguration.json": 5,
