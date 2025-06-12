@@ -180,7 +180,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     3: [function (require, module, exports) {
       module.exports = {
         "name": "pict-view",
-        "version": "1.0.56",
+        "version": "1.0.61",
         "description": "Pict View Base Class",
         "main": "source/Pict-View.js",
         "scripts": {
@@ -191,9 +191,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-view-image:local",
           "docker-dev-run": "docker run -it -d --name pict-view-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-view\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-view-image:local",
           "docker-dev-shell": "docker exec -it pict-view-dev /bin/bash",
-          "types": "npx -p typescript tsc -p . --outDir types"
+          "types": "tsc -p .",
+          "lint": "eslint source/**"
         },
-        "types": "types/Pict-View.d.ts",
+        "types": "types/source/Pict-View.d.ts",
         "repository": {
           "type": "git",
           "url": "git+https://github.com/stevenvelozo/pict-view.git"
@@ -205,10 +206,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         "homepage": "https://github.com/stevenvelozo/pict-view#readme",
         "devDependencies": {
+          "@eslint/js": "^9.28.0",
           "browser-env": "^3.3.0",
-          "pict": "^1.0.226",
-          "quackage": "^1.0.36",
-          "typescript": "^5.7.2"
+          "eslint": "^9.28.0",
+          "pict": "^1.0.272",
+          "quackage": "^1.0.41",
+          "typescript": "^5.8.3"
         },
         "mocha": {
           "diff": true,
@@ -222,7 +225,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "watch-ignore": ["lib/vendor"]
         },
         "dependencies": {
-          "fable": "^3.0.146",
+          "fable": "^3.1.11",
           "fable-serviceproviderbase": "^3.0.15"
         }
       };
@@ -259,13 +262,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       /** @typedef {number | boolean} PictTimestamp */
 
       /**
+       * @typedef {'replace' | 'append' | 'prepend' | 'append_once'} RenderMethod
+       */
+      /**
        * @typedef {Object} Renderable
        *
        * @property {string} RenderableHash - A unique hash for the renderable.
        * @property {string} TemplateHash] - The hash of the template to use for rendering this renderable.
        * @property {string} [DefaultTemplateRecordAddress] - The default address for resolving the data record for this renderable.
        * @property {string} [ContentDestinationAddress] - The default address (DOM CSS selector) for rendering the content of this renderable.
-       * @property {string} [RenderMethod] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
+       * @property {RenderMethod} [RenderMethod=replace] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
+       * @property {string} [TestAddress] - The address to use for testing the renderable.
        */
 
       /**
@@ -298,13 +305,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _this.options.ViewIdentifier = "AutoViewID-".concat(_this.fable.getUUID());
           }
           _this.serviceType = 'PictView';
-          /** @type {Object} */
+          /** @type {Record<string, any>} */
           _this._Package = libPackage;
           // Convenience and consistency naming
           /** @type {import('pict') & { log: any, instantiateServiceProviderWithoutRegistration: (hash: String) => any }} */
           _this.pict = _this.fable;
           // Wire in the essential Pict application state
           _this.AppData = _this.pict.AppData;
+          _this.Bundle = _this.pict.Bundle;
 
           /** @type {PictTimestamp} */
           _this.initializeTimestamp = false;
@@ -374,7 +382,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
          * @param {string} [pTemplateHash] - (optional) The hash of the template for the renderable.
          * @param {string} [pDefaultTemplateRecordAddress] - (optional) The default data address for the template.
          * @param {string} [pDefaultDestinationAddress] - (optional) The default destination address for the renderable.
-         * @param {string} [pRenderMethod] - (optional) The method to use when rendering the renderable (ex. 'replace').
+         * @param {RenderMethod} [pRenderMethod=replace] - (optional) The method to use when rendering the renderable (ex. 'replace').
          */
         _inherits(PictView, _libFableServiceBase);
         return _createClass(PictView, [{
@@ -387,6 +395,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               // Use theirs instead!
               tmpRenderable = pRenderableHash;
             } else {
+              /** @type {RenderMethod} */
               var tmpRenderMethod = typeof pRenderMethod !== 'string' ? pRenderMethod : 'replace';
               tmpRenderable = {
                 RenderableHash: pRenderableHash,
@@ -498,7 +507,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               tmpAnticipate.anticipate(this.onBeforeInitializeAsync.bind(this));
               tmpAnticipate.anticipate(this.onInitializeAsync.bind(this));
               tmpAnticipate.anticipate(this.onAfterInitializeAsync.bind(this));
-              tmpAnticipate.wait(function (pError) {
+              tmpAnticipate.wait(/** @param {Error} pError */
+              function (pError) {
+                if (pError) {
+                  _this2.log.error("PictView [".concat(_this2.UUID, "]::[").concat(_this2.Hash, "] ").concat(_this2.options.ViewIdentifier, " initialization failed: ").concat(pError.message || pError), {
+                    stack: pError.stack
+                  });
+                }
                 _this2.initializeTimestamp = _this2.pict.log.getTimeStamp();
                 if (_this2.pict.LogNoisiness > 0) {
                   _this2.log.info("PictView [".concat(_this2.UUID, "]::[").concat(_this2.Hash, "] ").concat(_this2.options.ViewIdentifier, " initialization complete."));
@@ -538,9 +553,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /**
            * Lifecycle hook that triggers before the view is rendered.
            *
-           * @param {any} [pRenderable] - The renderable that will be rendered.
-           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-           * @param {any} [pRecord] - The record (data) that will be used to render the renderable.
+           * @param {Renderable} pRenderable - The renderable that will be rendered.
+           * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
+           * @param {any} pRecord - The record (data) that will be used to render the renderable.
            */
         }, {
           key: "onBeforeRender",
@@ -565,12 +580,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
           /**
            * Builds the render options for a renderable.
-           * 
+           *
            * For DRY purposes on the three flavors of render.
-           * 
-           * @param {string} [pRenderableHash] - The hash of the renderable to render.
-           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-           * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+           *
+           * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string|object|ErrorCallback} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
            */
         }, {
           key: "buildRenderOptions",
@@ -598,16 +613,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               tmpRenderOptions.Record = pTemplateRecordAddress;
             } else {
               tmpRenderOptions.RecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderOptions.Renderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderOptions.Renderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
-              tmpRenderOptions.Record = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
+              tmpRenderOptions.Record = typeof tmpRenderOptions.RecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRenderOptions.RecordAddress) : undefined;
             }
             return tmpRenderOptions;
           }
 
           /**
            * Assigns the content to the destination address.
-           * 
+           *
            * For DRY purposes on the three flavors of render.
-           * 
+           *
            * @param {Renderable} pRenderable - The renderable to render.
            * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
            * @param {string} pContent - The content to render.
@@ -625,7 +640,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
            *
            * @param {string} [pRenderable] - The hash of the renderable to render.
            * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-           * @param {string} [pTemplateRecordAddress] - The address where the data for the template is stored.
+           * @param {string|object} [pTemplateRecordAddress] - The address where the data for the template is stored.
+           * @return {boolean}
            */
         }, {
           key: "render",
@@ -635,7 +651,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it is not a valid renderable."));
               return false;
             }
-            var tmpRenderable = this.renderables[tmpRenderableHash];
+            var tmpRenderable;
+            if (tmpRenderableHash == '__Virtual') {
+              tmpRenderable = {
+                RenderableHash: '__Virtual',
+                TemplateHash: this.renderables[this.options.DefaultRenderable].TemplateHash,
+                DestinationAddress: pRenderDestinationAddress,
+                RenderMethod: 'virtual-assignment'
+              };
+            } else {
+              tmpRenderable = this.renderables[tmpRenderableHash];
+            }
             if (!tmpRenderable) {
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not exist."));
               return false;
@@ -681,10 +707,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           /**
            * Render a renderable from this view.
            *
-           * @param {string | ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
-           * @param {string | ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-           * @param {string | ErrorCallback} [pTemplateRecordAddress] - The address where the data for the template is stored.
+           * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string|object|ErrorCallback} [pTemplateRecordAddress] - The address where the data for the template is stored.
            * @param {ErrorCallback} [fCallback] - The callback to call when the async operation is complete.
+           *
+           * @return {void}
            */
         }, {
           key: "renderAsync",
@@ -693,7 +721,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             var tmpRenderableHash = typeof pRenderableHash === 'string' ? pRenderableHash : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
 
             // Allow the callback to be passed in as the last parameter no matter what
-            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : false;
+            /** @type {ErrorCallback} */
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : null;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " renderAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
@@ -704,17 +733,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             if (!tmpRenderableHash) {
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable."));
-              return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable.")));
+              return tmpCallback(new Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable.")));
             }
-            var tmpRenderable = this.renderables[tmpRenderableHash];
+            var tmpRenderable;
+            if (tmpRenderableHash == '__Virtual') {
+              tmpRenderable = {
+                RenderableHash: '__Virtual',
+                TemplateHash: this.renderables[this.options.DefaultRenderable].TemplateHash,
+                DestinationAddress: pRenderDestinationAddress,
+                RenderMethod: 'virtual-assignment'
+              };
+            } else {
+              tmpRenderable = this.renderables[tmpRenderableHash];
+            }
             if (!tmpRenderable) {
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist."));
-              return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist.")));
+              return tmpCallback(new Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist.")));
             }
             var tmpRenderDestinationAddress = typeof pRenderDestinationAddress === 'string' ? pRenderDestinationAddress : typeof tmpRenderable.ContentDestinationAddress === 'string' ? tmpRenderable.ContentDestinationAddress : typeof this.options.DefaultDestinationAddress === 'string' ? this.options.DefaultDestinationAddress : false;
             if (!tmpRenderDestinationAddress) {
               this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not have a valid destination address."));
-              return tmpCallback(Error("Could not render ".concat(tmpRenderableHash)));
+              return tmpCallback(new Error("Could not render ".concat(tmpRenderableHash)));
             }
             var tmpRecordAddress;
             var tmpRecord;
@@ -773,10 +812,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             // Render the default renderable
             this.renderAsync(fCallback);
           }
+
+          /**
+           * @param {string} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+           */
         }, {
           key: "basicRender",
-          value: function basicRender(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
-            var tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+          value: function basicRender(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress) {
+            var tmpRenderOptions = this.buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress);
             if (tmpRenderOptions.Valid) {
               this.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, null, [this]));
               return true;
@@ -785,15 +830,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               return false;
             }
           }
+
+          /**
+           * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+           * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+           * @param {string|Object|ErrorCallback} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+           * @param {ErrorCallback} [fCallback] - The callback to call when the async operation is complete.
+           */
         }, {
           key: "basicRenderAsync",
-          value: function basicRenderAsync(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
+          value: function basicRenderAsync(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
             var _this4 = this;
             // Allow the callback to be passed in as the last parameter no matter what
-            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderable === 'function' ? pRenderable : false;
-            var tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+            /** @type {ErrorCallback} */
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : null;
+            if (!tmpCallback) {
+              this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " basicRenderAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+              tmpCallback = function tmpCallback(pError) {
+                if (pError) {
+                  _this4.log.error("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.Name, " basicRenderAsync Auto Callback Error: ").concat(pError), pError);
+                }
+              };
+            }
+            var tmpRenderOptions = this.buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress);
             if (tmpRenderOptions.Valid) {
-              this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, function (pError, pContent) {
+              this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record,
+              /**
+               * @param {Error} [pError] - The error that occurred during template parsing.
+               * @param {string} [pContent] - The content that was rendered from the template.
+               */
+              function (pError, pContent) {
                 if (pError) {
                   _this4.log.error("PictView [".concat(_this4.UUID, "]::[").concat(_this4.Hash, "] ").concat(_this4.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderOptions.RenderableHash, " because it did not parse the template."), pError);
                   return tmpCallback(pError);
@@ -804,17 +870,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             } else {
               var tmpErrorMessage = "PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid.");
               this.log.error(tmpErrorMessage);
-              return tmpCallback(tmpErrorMessage);
+              return tmpCallback(new Error(tmpErrorMessage));
             }
           }
 
           /**
            * Lifecycle hook that triggers after the view is rendered.
            *
-           * @param {any} [pRenderable] - The renderable that was rendered.
-           * @param {string} [pRenderDestinationAddress] - The address where the renderable was rendered.
-           * @param {any} [pRecord] - The record (data) that was used by the renderable.
-           * @param {string} [pContent] - The content that was rendered.
+           * @param {Renderable} pRenderable - The renderable that was rendered.
+           * @param {string} pRenderDestinationAddress - The address where the renderable was rendered.
+           * @param {any} pRecord - The record (data) that was used by the renderable.
+           * @param {string} pContent - The content that was rendered.
            */
         }, {
           key: "onAfterRender",
@@ -915,7 +981,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           value: function solveAsync(fCallback) {
             var _this5 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+            /** @type {ErrorCallback} */
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : null;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " solveAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
@@ -1041,7 +1109,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           value: function marshalFromViewAsync(fCallback) {
             var _this6 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+            /** @type {ErrorCallback} */
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : null;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalFromViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
@@ -1165,7 +1235,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           value: function marshalToViewAsync(fCallback) {
             var _this7 = this;
             var tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-            var tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+            /** @type {ErrorCallback} */
+            var tmpCallback = typeof fCallback === 'function' ? fCallback : null;
             if (!tmpCallback) {
               this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalToViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
               tmpCallback = function tmpCallback(pError) {
@@ -1481,14 +1553,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               this.services.PictApplication.solve();
             }
           }
+
+          /**
+           * Lifecycle hook that triggers after the view is rendered.
+           *
+           * @param {import('pict-view').Renderable} pRenderable - The renderable that was rendered.
+           * @param {string} pRenderDestinationAddress - The address where the renderable was rendered.
+           * @param {any} pRecord - The record (data) that was used by the renderable.
+           * @param {string} pContent - The content that was rendered.
+           */
         }, {
           key: "onAfterRender",
-          value: function onAfterRender() {
+          value: function onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent) {
             if (!this.initialRenderComplete) {
               this.onAfterInitialRender();
               this.initialRenderComplete = true;
             }
-            return _superPropGet(PictSectionTuiGrid, "onAfterRender", this, 3)([]);
+            return _superPropGet(PictSectionTuiGrid, "onAfterRender", this, 3)([pRenderable, pRenderDestinationAddress, pRecord, pContent]);
           }
         }, {
           key: "onAfterInitialRender",
@@ -1784,3 +1865,4 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {}]
   }, {}, [6])(6);
 });
+//# sourceMappingURL=pict-section-tuigrid.compatible.js.map

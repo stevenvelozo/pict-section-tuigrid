@@ -162,7 +162,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
     3: [function (require, module, exports) {
       module.exports = {
         "name": "pict-view",
-        "version": "1.0.56",
+        "version": "1.0.61",
         "description": "Pict View Base Class",
         "main": "source/Pict-View.js",
         "scripts": {
@@ -173,9 +173,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           "docker-dev-build": "docker build ./ -f Dockerfile_LUXURYCode -t pict-view-image:local",
           "docker-dev-run": "docker run -it -d --name pict-view-dev -p 30001:8080 -p 38086:8086 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/pict-view\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" pict-view-image:local",
           "docker-dev-shell": "docker exec -it pict-view-dev /bin/bash",
-          "types": "npx -p typescript tsc -p . --outDir types"
+          "types": "tsc -p .",
+          "lint": "eslint source/**"
         },
-        "types": "types/Pict-View.d.ts",
+        "types": "types/source/Pict-View.d.ts",
         "repository": {
           "type": "git",
           "url": "git+https://github.com/stevenvelozo/pict-view.git"
@@ -187,10 +188,12 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         },
         "homepage": "https://github.com/stevenvelozo/pict-view#readme",
         "devDependencies": {
+          "@eslint/js": "^9.28.0",
           "browser-env": "^3.3.0",
-          "pict": "^1.0.226",
-          "quackage": "^1.0.36",
-          "typescript": "^5.7.2"
+          "eslint": "^9.28.0",
+          "pict": "^1.0.272",
+          "quackage": "^1.0.41",
+          "typescript": "^5.8.3"
         },
         "mocha": {
           "diff": true,
@@ -204,7 +207,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           "watch-ignore": ["lib/vendor"]
         },
         "dependencies": {
-          "fable": "^3.0.146",
+          "fable": "^3.1.11",
           "fable-serviceproviderbase": "^3.0.15"
         }
       };
@@ -241,13 +244,17 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
       /** @typedef {number | boolean} PictTimestamp */
 
       /**
+       * @typedef {'replace' | 'append' | 'prepend' | 'append_once'} RenderMethod
+       */
+      /**
        * @typedef {Object} Renderable
        *
        * @property {string} RenderableHash - A unique hash for the renderable.
        * @property {string} TemplateHash] - The hash of the template to use for rendering this renderable.
        * @property {string} [DefaultTemplateRecordAddress] - The default address for resolving the data record for this renderable.
        * @property {string} [ContentDestinationAddress] - The default address (DOM CSS selector) for rendering the content of this renderable.
-       * @property {string} [RenderMethod] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
+       * @property {RenderMethod} [RenderMethod=replace] - The method to use when projecting the renderable to the DOM ('replace', 'append', 'prepend', 'append_once').
+       * @property {string} [TestAddress] - The address to use for testing the renderable.
        */
 
       /**
@@ -278,13 +285,14 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.options.ViewIdentifier = "AutoViewID-".concat(this.fable.getUUID());
           }
           this.serviceType = 'PictView';
-          /** @type {Object} */
+          /** @type {Record<string, any>} */
           this._Package = libPackage;
           // Convenience and consistency naming
           /** @type {import('pict') & { log: any, instantiateServiceProviderWithoutRegistration: (hash: String) => any }} */
           this.pict = this.fable;
           // Wire in the essential Pict application state
           this.AppData = this.pict.AppData;
+          this.Bundle = this.pict.Bundle;
 
           /** @type {PictTimestamp} */
           this.initializeTimestamp = false;
@@ -353,7 +361,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          * @param {string} [pTemplateHash] - (optional) The hash of the template for the renderable.
          * @param {string} [pDefaultTemplateRecordAddress] - (optional) The default data address for the template.
          * @param {string} [pDefaultDestinationAddress] - (optional) The default destination address for the renderable.
-         * @param {string} [pRenderMethod] - (optional) The method to use when rendering the renderable (ex. 'replace').
+         * @param {RenderMethod} [pRenderMethod=replace] - (optional) The method to use when rendering the renderable (ex. 'replace').
          */
         addRenderable(pRenderableHash, pTemplateHash, pDefaultTemplateRecordAddress, pDefaultDestinationAddress, pRenderMethod) {
           /** @type {Renderable} */
@@ -363,6 +371,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             // Use theirs instead!
             tmpRenderable = pRenderableHash;
           } else {
+            /** @type {RenderMethod} */
             let tmpRenderMethod = typeof pRenderMethod !== 'string' ? pRenderMethod : 'replace';
             tmpRenderable = {
               RenderableHash: pRenderableHash,
@@ -461,7 +470,13 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             tmpAnticipate.anticipate(this.onBeforeInitializeAsync.bind(this));
             tmpAnticipate.anticipate(this.onInitializeAsync.bind(this));
             tmpAnticipate.anticipate(this.onAfterInitializeAsync.bind(this));
-            tmpAnticipate.wait(pError => {
+            tmpAnticipate.wait(/** @param {Error} pError */
+            pError => {
+              if (pError) {
+                this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " initialization failed: ").concat(pError.message || pError), {
+                  stack: pError.stack
+                });
+              }
               this.initializeTimestamp = this.pict.log.getTimeStamp();
               if (this.pict.LogNoisiness > 0) {
                 this.log.info("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " initialization complete."));
@@ -497,9 +512,9 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         /**
          * Lifecycle hook that triggers before the view is rendered.
          *
-         * @param {any} [pRenderable] - The renderable that will be rendered.
-         * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-         * @param {any} [pRecord] - The record (data) that will be used to render the renderable.
+         * @param {Renderable} pRenderable - The renderable that will be rendered.
+         * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
+         * @param {any} pRecord - The record (data) that will be used to render the renderable.
          */
         onBeforeRender(pRenderable, pRenderDestinationAddress, pRecord) {
           // Overload this to mess with stuff before the content gets generated from the template
@@ -520,12 +535,12 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
         /**
          * Builds the render options for a renderable.
-         * 
+         *
          * For DRY purposes on the three flavors of render.
-         * 
-         * @param {string} [pRenderableHash] - The hash of the renderable to render.
-         * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-         * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+         *
+         * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+         * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+         * @param {string|object|ErrorCallback} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
          */
         buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress) {
           let tmpRenderOptions = {
@@ -551,16 +566,16 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             tmpRenderOptions.Record = pTemplateRecordAddress;
           } else {
             tmpRenderOptions.RecordAddress = typeof pTemplateRecordAddress === 'string' ? pTemplateRecordAddress : typeof tmpRenderOptions.Renderable.DefaultTemplateRecordAddress === 'string' ? tmpRenderOptions.Renderable.DefaultTemplateRecordAddress : typeof this.options.DefaultTemplateRecordAddress === 'string' ? this.options.DefaultTemplateRecordAddress : false;
-            tmpRenderOptions.Record = typeof tmpRecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRecordAddress) : undefined;
+            tmpRenderOptions.Record = typeof tmpRenderOptions.RecordAddress === 'string' ? this.pict.DataProvider.getDataByAddress(tmpRenderOptions.RecordAddress) : undefined;
           }
           return tmpRenderOptions;
         }
 
         /**
          * Assigns the content to the destination address.
-         * 
+         *
          * For DRY purposes on the three flavors of render.
-         * 
+         *
          * @param {Renderable} pRenderable - The renderable to render.
          * @param {string} pRenderDestinationAddress - The address where the renderable will be rendered.
          * @param {string} pContent - The content to render.
@@ -576,7 +591,8 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          *
          * @param {string} [pRenderable] - The hash of the renderable to render.
          * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-         * @param {string} [pTemplateRecordAddress] - The address where the data for the template is stored.
+         * @param {string|object} [pTemplateRecordAddress] - The address where the data for the template is stored.
+         * @return {boolean}
          */
         render(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
           let tmpRenderableHash = typeof pRenderable === 'string' ? pRenderable : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
@@ -584,7 +600,17 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it is not a valid renderable."));
             return false;
           }
-          let tmpRenderable = this.renderables[tmpRenderableHash];
+          let tmpRenderable;
+          if (tmpRenderableHash == '__Virtual') {
+            tmpRenderable = {
+              RenderableHash: '__Virtual',
+              TemplateHash: this.renderables[this.options.DefaultRenderable].TemplateHash,
+              DestinationAddress: pRenderDestinationAddress,
+              RenderMethod: 'virtual-assignment'
+            };
+          } else {
+            tmpRenderable = this.renderables[tmpRenderableHash];
+          }
           if (!tmpRenderable) {
             this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderable, ") because it does not exist."));
             return false;
@@ -630,16 +656,19 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         /**
          * Render a renderable from this view.
          *
-         * @param {string | ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
-         * @param {string | ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
-         * @param {string | ErrorCallback} [pTemplateRecordAddress] - The address where the data for the template is stored.
+         * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+         * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+         * @param {string|object|ErrorCallback} [pTemplateRecordAddress] - The address where the data for the template is stored.
          * @param {ErrorCallback} [fCallback] - The callback to call when the async operation is complete.
+         *
+         * @return {void}
          */
         renderAsync(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
           let tmpRenderableHash = typeof pRenderableHash === 'string' ? pRenderableHash : typeof this.options.DefaultRenderable == 'string' ? this.options.DefaultRenderable : false;
 
           // Allow the callback to be passed in as the last parameter no matter what
-          let tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : false;
+          /** @type {ErrorCallback} */
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : null;
           if (!tmpCallback) {
             this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " renderAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
             tmpCallback = pError => {
@@ -650,17 +679,27 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
           if (!tmpRenderableHash) {
             this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable."));
-            return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable.")));
+            return tmpCallback(new Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not asynchronously render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, "because it is not a valid renderable.")));
           }
-          let tmpRenderable = this.renderables[tmpRenderableHash];
+          let tmpRenderable;
+          if (tmpRenderableHash == '__Virtual') {
+            tmpRenderable = {
+              RenderableHash: '__Virtual',
+              TemplateHash: this.renderables[this.options.DefaultRenderable].TemplateHash,
+              DestinationAddress: pRenderDestinationAddress,
+              RenderMethod: 'virtual-assignment'
+            };
+          } else {
+            tmpRenderable = this.renderables[tmpRenderableHash];
+          }
           if (!tmpRenderable) {
             this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist."));
-            return tmpCallback(Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist.")));
+            return tmpCallback(new Error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not exist.")));
           }
           let tmpRenderDestinationAddress = typeof pRenderDestinationAddress === 'string' ? pRenderDestinationAddress : typeof tmpRenderable.ContentDestinationAddress === 'string' ? tmpRenderable.ContentDestinationAddress : typeof this.options.DefaultDestinationAddress === 'string' ? this.options.DefaultDestinationAddress : false;
           if (!tmpRenderDestinationAddress) {
             this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render ").concat(tmpRenderableHash, " (param ").concat(pRenderableHash, ") because it does not have a valid destination address."));
-            return tmpCallback(Error("Could not render ".concat(tmpRenderableHash)));
+            return tmpCallback(new Error("Could not render ".concat(tmpRenderableHash)));
           }
           let tmpRecordAddress;
           let tmpRecord;
@@ -717,8 +756,14 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           // Render the default renderable
           this.renderAsync(fCallback);
         }
-        basicRender(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress) {
-          let tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+
+        /**
+         * @param {string} [pRenderableHash] - The hash of the renderable to render.
+         * @param {string} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+         * @param {string|object} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+         */
+        basicRender(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress) {
+          let tmpRenderOptions = this.buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress);
           if (tmpRenderOptions.Valid) {
             this.assignRenderContent(tmpRenderOptions.Renderable, tmpRenderOptions.DestinationAddress, this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, null, [this]));
             return true;
@@ -727,12 +772,33 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             return false;
           }
         }
-        basicRenderAsync(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
+
+        /**
+         * @param {string|ErrorCallback} [pRenderableHash] - The hash of the renderable to render.
+         * @param {string|ErrorCallback} [pRenderDestinationAddress] - The address where the renderable will be rendered.
+         * @param {string|Object|ErrorCallback} [pTemplateRecordAddress] - The address of (or actual obejct) where the data for the template is stored.
+         * @param {ErrorCallback} [fCallback] - The callback to call when the async operation is complete.
+         */
+        basicRenderAsync(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress, fCallback) {
           // Allow the callback to be passed in as the last parameter no matter what
-          let tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderable === 'function' ? pRenderable : false;
-          let tmpRenderOptions = this.buildRenderOptions(pRenderable, pRenderDestinationAddress, pTemplateRecordAddress);
+          /** @type {ErrorCallback} */
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : typeof pTemplateRecordAddress === 'function' ? pTemplateRecordAddress : typeof pRenderDestinationAddress === 'function' ? pRenderDestinationAddress : typeof pRenderableHash === 'function' ? pRenderableHash : null;
+          if (!tmpCallback) {
+            this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " basicRenderAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
+            tmpCallback = pError => {
+              if (pError) {
+                this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " basicRenderAsync Auto Callback Error: ").concat(pError), pError);
+              }
+            };
+          }
+          const tmpRenderOptions = this.buildRenderOptions(pRenderableHash, pRenderDestinationAddress, pTemplateRecordAddress);
           if (tmpRenderOptions.Valid) {
-            this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record, (pError, pContent) => {
+            this.pict.parseTemplateByHash(tmpRenderOptions.Renderable.TemplateHash, tmpRenderOptions.Record,
+            /**
+             * @param {Error} [pError] - The error that occurred during template parsing.
+             * @param {string} [pContent] - The content that was rendered from the template.
+             */
+            (pError, pContent) => {
               if (pError) {
                 this.log.error("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not render (asynchronously) ").concat(tmpRenderOptions.RenderableHash, " because it did not parse the template."), pError);
                 return tmpCallback(pError);
@@ -743,17 +809,17 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           } else {
             let tmpErrorMessage = "PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.ViewIdentifier, " could not perform a basic render of ").concat(tmpRenderOptions.RenderableHash, " because it is not valid.");
             this.log.error(tmpErrorMessage);
-            return tmpCallback(tmpErrorMessage);
+            return tmpCallback(new Error(tmpErrorMessage));
           }
         }
 
         /**
          * Lifecycle hook that triggers after the view is rendered.
          *
-         * @param {any} [pRenderable] - The renderable that was rendered.
-         * @param {string} [pRenderDestinationAddress] - The address where the renderable was rendered.
-         * @param {any} [pRecord] - The record (data) that was used by the renderable.
-         * @param {string} [pContent] - The content that was rendered.
+         * @param {Renderable} pRenderable - The renderable that was rendered.
+         * @param {string} pRenderDestinationAddress - The address where the renderable was rendered.
+         * @param {any} pRecord - The record (data) that was used by the renderable.
+         * @param {string} pContent - The content that was rendered.
          */
         onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent) {
           if (this.pict.LogNoisiness > 3) {
@@ -837,7 +903,9 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          */
         solveAsync(fCallback) {
           let tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-          let tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+          /** @type {ErrorCallback} */
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : null;
           if (!tmpCallback) {
             this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " solveAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
             tmpCallback = pError => {
@@ -946,7 +1014,9 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          */
         marshalFromViewAsync(fCallback) {
           let tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-          let tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+          /** @type {ErrorCallback} */
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : null;
           if (!tmpCallback) {
             this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalFromViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
             tmpCallback = pError => {
@@ -1053,7 +1123,9 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          */
         marshalToViewAsync(fCallback) {
           let tmpAnticipate = this.pict.instantiateServiceProviderWithoutRegistration('Anticipate');
-          let tmpCallback = typeof fCallback === 'function' ? fCallback : false;
+
+          /** @type {ErrorCallback} */
+          let tmpCallback = typeof fCallback === 'function' ? fCallback : null;
           if (!tmpCallback) {
             this.log.warn("PictView [".concat(this.UUID, "]::[").concat(this.Hash, "] ").concat(this.options.Name, " marshalToViewAsync was called without a valid callback.  A callback will be generated but this could lead to race conditions."));
             tmpCallback = pError => {
@@ -1348,12 +1420,21 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             this.services.PictApplication.solve();
           }
         }
-        onAfterRender() {
+
+        /**
+         * Lifecycle hook that triggers after the view is rendered.
+         *
+         * @param {import('pict-view').Renderable} pRenderable - The renderable that was rendered.
+         * @param {string} pRenderDestinationAddress - The address where the renderable was rendered.
+         * @param {any} pRecord - The record (data) that was used by the renderable.
+         * @param {string} pContent - The content that was rendered.
+         */
+        onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent) {
           if (!this.initialRenderComplete) {
             this.onAfterInitialRender();
             this.initialRenderComplete = true;
           }
-          return super.onAfterRender();
+          return super.onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent);
         }
         onAfterInitialRender() {
           // This is where we wire up and initialize the tuigrid control -- the initial render has put the placeholder content in place.
@@ -1617,3 +1698,4 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
     }, {}]
   }, {}, [6])(6);
 });
+//# sourceMappingURL=pict-section-tuigrid.js.map

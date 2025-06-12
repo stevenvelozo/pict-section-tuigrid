@@ -134,7 +134,6 @@ declare class PictSectionTuiGrid extends libPictViewClass {
             prevValue?: any;
         }[];
     }): void;
-    onAfterRender(): boolean;
     onAfterInitialRender(): boolean;
     targetElement: any;
     gridSettings: {
