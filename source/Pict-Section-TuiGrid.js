@@ -194,18 +194,15 @@ class PictSectionTuiGrid extends libPictViewClass
 	 * Lifecycle hook that triggers after the view is rendered.
 	 *
 	 * @param {import('pict-view').Renderable} pRenderable - The renderable that was rendered.
-	 * @param {string} pRenderDestinationAddress - The address where the renderable was rendered.
-	 * @param {any} pRecord - The record (data) that was used by the renderable.
-	 * @param {string} pContent - The content that was rendered.
 	 */
-	onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent)
+	onAfterRender(pRenderable)
 	{
 		if (!this.initialRenderComplete)
 		{
 			this.onAfterInitialRender();
 			this.initialRenderComplete = true;
 		}
-		return super.onAfterRender(pRenderable, pRenderDestinationAddress, pRecord, pContent);
+		return super.onAfterRender(pRenderable);
 	}
 
 	onAfterInitialRender()
