@@ -4,8 +4,8 @@
     "description": "Pict Toast UI Grid Section",
     "main": "source/Pict-Section-TuiGrid.js",
     "scripts": {
-        "test": "npx mocha -u tdd --exit -R spec",
-        "tests": "npx mocha -u tdd --exit -R spec --grep",
+        "test": "npx quack test",
+        "tests": "npx quack test -g",
         "start": "node source/Pict-Section-TuiGrid.js",
         "coverage": "npx quack coverage",
         "build": "quack build",
