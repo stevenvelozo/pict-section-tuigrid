@@ -29,7 +29,7 @@
         "bower": "^1.8.14",
         "browser-env": "^3.3.0",
         "pict": "^1.0.348",
-        "quackage": "^1.0.51",
+        "quackage": "^1.0.58",
         "tui-grid": "^4.21.22",
         "typescript": "^5.9.3"
     },
