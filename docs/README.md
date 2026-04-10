@@ -109,7 +109,7 @@ Open `dist/index.html` in your browser.
 1. Your Pict application initializes and renders the grid view
 2. The view places a placeholder element in the DOM
 3. On first render, `onAfterInitialRender()` resolves the `GridDataAddress` to load data from `AppData`
-4. The column schema is processed — string formatter names are mapped to built-in functions, editor type strings are mapped to editor classes, and address-based `listItems` are resolved
+4. The column schema is processed -- string formatter names are mapped to built-in functions, editor type strings are mapped to editor classes, and address-based `listItems` are resolved
 5. A Toast UI Grid instance is created with the resolved configuration
 6. Change events are wired: `beforeChange` calls `preChangeHandler()` and `afterChange` calls `changeHandler()`
 7. When a cell in a solver-enabled column changes, the Pict application solver runs
@@ -151,8 +151,8 @@ When a user edits a cell in one of these columns, `changeHandler()` automaticall
 
 Two working example applications are included in the `example_applications/` folder:
 
-- **`inventory_grid/`** — A config-only inventory table with text, currency, select, and date editors. No custom code beyond configuration.
-- **`invoice_grid/`** — Overrides `preChangeHandler` and `changeHandler` to compute line totals, apply discount logic, and format a running invoice total in real time.
+- **`inventory_grid/`** -- A config-only inventory table with text, currency, select, and date editors. No custom code beyond configuration.
+- **`invoice_grid/`** -- Overrides `preChangeHandler` and `changeHandler` to compute line totals, apply discount logic, and format a running invoice total in real time.
 
 ## Learn More
 

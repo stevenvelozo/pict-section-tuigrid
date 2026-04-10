@@ -32,7 +32,7 @@ The Toast UI Grid instance. `null` until the first render completes and the grid
 
 ### gridData
 
-The array of row objects loaded from `GridDataAddress`. This is a deep clone of the source data — mutations here do not affect `AppData` directly.
+The array of row objects loaded from `GridDataAddress`. This is a deep clone of the source data -- mutations here do not affect `AppData` directly.
 
 **Type:** `Array<object> | null`
 
@@ -162,7 +162,7 @@ Each change object contains:
 | `rowKey` | any | Toast UI Grid row identifier |
 | `columnName` | string | The column that changed |
 | `value` | any | The current (pre-change) cell value |
-| `nextValue` | any | The incoming value (mutable — modify to transform input) |
+| `nextValue` | any | The incoming value (mutable -- modify to transform input) |
 
 ```javascript
 preChangeHandler(pChangeData)
@@ -248,7 +248,7 @@ Set a cell value by Toast UI Grid's native row key. More direct than `SetGridVal
 | `pCellValueToSet` | any | Value to write |
 | `pRowKey` | any | Toast UI Grid row key |
 
-**Returns:** `boolean` — `true` on success, `false` if the grid is not initialized or the row key is invalid.
+**Returns:** `boolean` -- `true` on success, `false` if the grid is not initialized or the row key is invalid.
 
 ---
 

@@ -26,7 +26,7 @@ Grid configuration is passed as the options object when registering a view with 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `RenderOnLoad` | boolean | `true` | Render the grid when the view loads |
-| `ViewIdentifier` | string | — | Unique name for this view instance |
+| `ViewIdentifier` | string | -- | Unique name for this view instance |
 | `TargetElementAddress` | string | `"#TuiGrid-Container-Div"` | CSS selector for the grid mount point |
 | `DefaultRenderable` | string | `"TuiGrid-Wrap"` | Renderable hash for the container template |
 | `DefaultDestinationAddress` | string | `"#TuiGrid-Container-Div"` | Destination for rendered content |
@@ -114,7 +114,7 @@ Built-in formatter names: `"FormatterCurrencyNumber"`, `"FormatterTwoDigitNumber
 
 #### Editor Types
 
-**EditorText** — Text input with HTML5 validation:
+**EditorText** -- Text input with HTML5 validation:
 
 ```javascript
 {
@@ -130,7 +130,7 @@ Built-in formatter names: `"FormatterCurrencyNumber"`, `"FormatterTwoDigitNumber
 }
 ```
 
-**EditorNumber** — Number input with decimal precision enforcement:
+**EditorNumber** -- Number input with decimal precision enforcement:
 
 ```javascript
 {
@@ -142,7 +142,7 @@ Built-in formatter names: `"FormatterCurrencyNumber"`, `"FormatterTwoDigitNumber
 }
 ```
 
-**select** — Native dropdown (Toast UI Grid built-in):
+**select** -- Native dropdown (Toast UI Grid built-in):
 
 ```javascript
 {
@@ -170,7 +170,7 @@ The `listItems` property can also be an address string that resolves at initiali
 }
 ```
 
-**datePicker** — Toast UI date picker:
+**datePicker** -- Toast UI date picker:
 
 ```javascript
 {
@@ -198,7 +198,7 @@ You can also set solver columns in the view configuration:
 }
 ```
 
-Both approaches have the same effect — when a cell in a solver-enabled column is edited, `this.services.PictApplication.solve()` is called automatically.
+Both approaches have the same effect -- when a cell in a solver-enabled column is edited, `this.services.PictApplication.solve()` is called automatically.
 
 ## Templates
 

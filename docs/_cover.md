@@ -2,7 +2,7 @@
 
 > Configurable data grids for Pict applications
 
-Display and edit tabular data with the Toast UI Grid wrapped as a Pict view. Define columns, formatters, and editors in a JSON configuration object — or extend the class to override data marshaling for computed columns, custom validation, and live solver integration.
+Display and edit tabular data with the Toast UI Grid wrapped as a Pict view. Define columns, formatters, and editors in a JSON configuration object -- or extend the class to override data marshaling for computed columns, custom validation, and live solver integration.
 
 - **Config-Driven** -- Define column schemas, editors, and formatters entirely in JSON
 - **Built-In Editors** -- Text, number (with decimal precision), select dropdowns, and date pickers
