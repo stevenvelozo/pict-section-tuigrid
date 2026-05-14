@@ -1,0 +1,18 @@
+{
+	"Hash": "pict-section-tuigrid",
+	"Name": "Pict Section Tuigrid",
+	"Tagline": "Toast UI Grid integration for spreadsheet-like tabular data display with sorting, filtering, and editing",
+	"Palette": "mix",
+	"Icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"frame-pict-section-tuigrid-filled-light\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#1bb9d3\"/>\n\t\t<g clip-path=\"url(#frame-pict-section-tuigrid-filled-light)\"><circle cx=\"48\" cy=\"48\" r=\"36\" fill=\"#e67d51\" opacity=\"0.85\"/>\n\t\t\t\t\t<circle cx=\"48\" cy=\"48\" r=\"25\" fill=\"rgba(255,255,255,0.18)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"28\" font-weight=\"700\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">PST</text>\n\t</svg>",
+	"IconType": "svg",
+	"Favicon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-pict-section-tuigrid-light\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#1bb9d3\"/>\n\t\t<g clip-path=\"url(#fav-pict-section-tuigrid-light)\"><circle cx=\"48\" cy=\"48\" r=\"40\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">P</text>\n\t</svg>",
+	"FaviconDark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-pict-section-tuigrid-dark\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#65d3e5\"/>\n\t\t<g clip-path=\"url(#fav-pict-section-tuigrid-dark)\"><circle cx=\"48\" cy=\"48\" r=\"40\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#101418\" letter-spacing=\"-1\">P</text>\n\t</svg>",
+	"Colors": {
+		"Primary": "#1bb9d3",
+		"Secondary": "#e67d51",
+		"PrimaryLight": "#1bb9d3",
+		"PrimaryDark": "#65d3e5",
+		"SecondaryLight": "#e67d51",
+		"SecondaryDark": "#efbba5"
+	}
+}
